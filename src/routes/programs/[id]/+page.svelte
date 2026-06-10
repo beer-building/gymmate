@@ -2,11 +2,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { user } from '$lib/models/auth';
-	import {
-		programDetails,
-		programError,
-		programPageOpened
-	} from '$lib/models/programs';
+	import { programDetails, programError, programPageOpened } from '$lib/models/programs';
 	import { createWorkoutFx } from '$lib/models/diary';
 	import { goalLabels, difficultyLabels } from '$lib/labels';
 	import type { ProgramDay } from '$lib/types';

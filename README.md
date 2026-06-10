@@ -1,42 +1,51 @@
-# sv
+# GymMate
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Приложение для тренировок в зале (по мотивам tvoytrener.com): каталог упражнений,
+готовые программы и дневник тренировок с подходами и весами.
 
-## Creating a project
+## Стек
 
-If you're seeing this, you've probably already done this step. Congrats!
+- **Фронтенд**: SvelteKit (Svelte 5, runes) + [effector](https://effector.dev) для моделей и бизнес-логики
+- **Бэкенд**: [PocketBase](https://pocketbase.io) — живёт в `../gymmate_backend`
 
-```sh
-# create a new project
-npx sv create my-app
-```
+## Запуск
 
-To recreate this project with the same configuration:
-
-```sh
-# recreate this project
-pnpm dlx sv@0.16.1 create --template minimal --types ts --add vitest="usages:unit,component" sveltekit-adapter="adapter:auto" mdsvex experimental="versions:kit+features:async,remoteFunctions,explicitEnvironmentVariables,handleRenderingErrors" prettier eslint paraglide="languageTags:en, es, ru+demo:yes" --install pnpm gymmate
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Бэкенд (порт 8090, доступен в локальной сети):
 
 ```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+cd ../gymmate_backend
+./pocketbase serve --http=0.0.0.0:8090
 ```
 
-## Building
-
-To create a production version of your app:
+Фронтенд:
 
 ```sh
-npm run build
+pnpm install
+pnpm dev
 ```
 
-You can preview the production build with `npm run preview`.
+Адрес PocketBase настраивается через `VITE_POCKETBASE_URL` в `.env`
+(сейчас `http://192.168.1.40:8090` — LAN-адрес машины; fallback в коде — `http://127.0.0.1:8090`).
+После изменения `.env` dev-сервер нужно перезапустить.
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+Админка PocketBase: http://192.168.1.40:8090/_/ (`admin@gymmate.local` / `gymmate-admin-123`).
+
+## Структура
+
+- `src/lib/models/` — effector-модели (auth, exercises, programs, diary)
+- `src/lib/api.ts` — обёртки над PocketBase SDK
+- `src/routes/` — страницы: каталог упражнений, программы, дневник, авторизация
+- `../gymmate_backend/pb_migrations/` — схема коллекций и сид-данные
+
+После изменения миграций: `./pocketbase migrate up` и **перезапуск** сервера
+(работающий процесс кэширует схему коллекций).
+
+## Команды
+
+```sh
+pnpm dev     # дев-сервер
+pnpm check   # svelte-check
+pnpm lint    # prettier + eslint
+pnpm test    # vitest
+pnpm build   # прод-сборка
+```

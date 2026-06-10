@@ -28,7 +28,11 @@
 	{:else}
 		<div class="list">
 			{#each $programs as program, i (program.id)}
-				<a href="/programs/{program.id}" class="plate row rise" style="animation-delay: {i * 0.08}s">
+				<a
+					href="/programs/{program.id}"
+					class="plate row rise"
+					style="animation-delay: {i * 0.08}s"
+				>
 					<div class="goal">
 						<span class="mono">{goalLabels[program.goal]}</span>
 					</div>

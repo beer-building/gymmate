@@ -1,14 +1,18 @@
-import { createEffect, createEvent, createStore, sample } from 'effector';
+import { combine, createEffect, createEvent, createStore, sample } from 'effector';
 import * as api from '$lib/api';
 import type { Exercise, MuscleGroup } from '$lib/types';
 
-// --- список упражнений ---
+// --- список упражнений: грузим весь каталог, фильтруем на клиенте ---
 
 export const exercisesPageOpened = createEvent();
 export const muscleGroupSelected = createEvent<MuscleGroup | null>();
+export const searchChanged = createEvent<string>();
 
-export const loadExercisesFx = createEffect((group: MuscleGroup | null) =>
-	api.getExercises(group ?? undefined)
+export const loadExercisesFx = createEffect(() => api.getExercises());
+
+export const exercises = createStore<Exercise[]>([]).on(
+	loadExercisesFx.doneData,
+	(_, items) => items
 );
 
 export const muscleGroup = createStore<MuscleGroup | null>(null).on(
@@ -16,9 +20,20 @@ export const muscleGroup = createStore<MuscleGroup | null>(null).on(
 	(_, group) => group
 );
 
-export const exercises = createStore<Exercise[]>([]).on(
-	loadExercisesFx.doneData,
-	(_, items) => items
+export const searchQuery = createStore('').on(searchChanged, (_, query) => query);
+
+export const filteredExercises = combine(
+	exercises,
+	muscleGroup,
+	searchQuery,
+	(items, group, query) => {
+		const normalized = query.trim().toLowerCase();
+		return items.filter(
+			(item) =>
+				(!group || item.muscle_group === group) &&
+				(!normalized || item.name.toLowerCase().includes(normalized))
+		);
+	}
 );
 
 export const exercisesLoading = loadExercisesFx.pending;
@@ -26,16 +41,7 @@ export const exercisesError = createStore(false)
 	.on(loadExercisesFx.fail, () => true)
 	.reset(loadExercisesFx.done);
 
-sample({
-	clock: exercisesPageOpened,
-	source: muscleGroup,
-	target: loadExercisesFx
-});
-
-sample({
-	clock: muscleGroupSelected,
-	target: loadExercisesFx
-});
+sample({ clock: exercisesPageOpened, target: loadExercisesFx });
 
 // --- деталка упражнения ---
 

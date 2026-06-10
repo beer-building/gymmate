@@ -56,14 +56,18 @@
 		<div class="plate empty rise">
 			<p class="mono">Пока пусто</p>
 			<p class="muted">
-				Начни с <a href="/programs">готовой программы</a> или создай тренировку с нуля — и
-				записывай каждый подход.
+				Начни с <a href="/programs">готовой программы</a> или создай тренировку с нуля — и записывай каждый
+				подход.
 			</p>
 		</div>
 	{:else}
 		<div class="list">
 			{#each $workouts as workout, i (workout.id)}
-				<a href="/diary/{workout.id}" class="plate row rise" style="animation-delay: {Math.min(i * 0.05, 0.4)}s">
+				<a
+					href="/diary/{workout.id}"
+					class="plate row rise"
+					style="animation-delay: {Math.min(i * 0.05, 0.4)}s"
+				>
 					<div class="date mono">{formatDate(workout.date)}</div>
 					<div class="body">
 						<h2>{workout.name || 'Тренировка'}</h2>

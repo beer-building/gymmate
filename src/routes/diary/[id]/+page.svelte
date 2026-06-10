@@ -40,16 +40,16 @@
 
 	// подходы, сгруппированные по упражнению, в порядке добавления
 	const grouped = $derived.by(() => {
-		const map = new Map<string, { name: string; sets: WorkoutSet[] }>();
+		const groups: { id: string; name: string; sets: WorkoutSet[] }[] = [];
 		for (const set of $workoutSets) {
-			const entry = map.get(set.exercise) ?? {
-				name: set.expand?.exercise?.name ?? '—',
-				sets: []
-			};
+			let entry = groups.find((group) => group.id === set.exercise);
+			if (!entry) {
+				entry = { id: set.exercise, name: set.expand?.exercise?.name ?? '—', sets: [] };
+				groups.push(entry);
+			}
 			entry.sets.push(set);
-			map.set(set.exercise, entry);
 		}
-		return [...map.entries()];
+		return groups;
 	});
 
 	function addSet(event: SubmitEvent) {
@@ -136,10 +136,10 @@
 			</form>
 		</section>
 
-		{#each grouped as [exerciseId, group] (exerciseId)}
+		{#each grouped as group (group.id)}
 			<section class="plate block">
 				<div class="group-head">
-					<h2><a href="/exercises/{exerciseId}">{group.name}</a></h2>
+					<h2><a href="/exercises/{group.id}">{group.name}</a></h2>
 					<span class="mono muted">{group.sets.length} подх.</span>
 				</div>
 				<div class="sets">

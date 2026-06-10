@@ -9,7 +9,9 @@ export const muscleGroupLabels: Record<MuscleGroup, string> = {
 	shoulders: 'Плечи',
 	biceps: 'Бицепс',
 	triceps: 'Трицепс',
-	abs: 'Пресс'
+	forearms: 'Предплечья',
+	abs: 'Пресс',
+	neck: 'Шея'
 };
 
 export const equipmentLabels: Record<Equipment, string> = {
@@ -18,7 +20,8 @@ export const equipmentLabels: Record<Equipment, string> = {
 	machine: 'Тренажёр',
 	cable: 'Блок',
 	bodyweight: 'Свой вес',
-	kettlebell: 'Гиря'
+	kettlebell: 'Гиря',
+	band: 'Резина'
 };
 
 export const difficultyLabels: Record<Difficulty, string> = {

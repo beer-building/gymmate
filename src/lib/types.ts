@@ -1,3 +1,5 @@
+export type Gender = 'male' | 'female';
+
 export type MuscleGroup =
 	| 'chest'
 	| 'back'
@@ -7,9 +9,18 @@ export type MuscleGroup =
 	| 'shoulders'
 	| 'biceps'
 	| 'triceps'
-	| 'abs';
+	| 'forearms'
+	| 'abs'
+	| 'neck';
 
-export type Equipment = 'barbell' | 'dumbbell' | 'machine' | 'cable' | 'bodyweight' | 'kettlebell';
+export type Equipment =
+	| 'barbell'
+	| 'dumbbell'
+	| 'machine'
+	| 'cable'
+	| 'bodyweight'
+	| 'kettlebell'
+	| 'band';
 
 export type Difficulty = 'beginner' | 'intermediate' | 'advanced';
 
@@ -23,6 +34,7 @@ export interface Exercise {
 	difficulty: Difficulty;
 	description: string;
 	technique: string;
+	videos: string[] | null;
 }
 
 export interface Program {

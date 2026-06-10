@@ -1,15 +1,21 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import {
-		currentExercise,
-		exerciseError,
-		exercisePageOpened
-	} from '$lib/models/exercises';
+	import { currentExercise, exerciseError, exercisePageOpened } from '$lib/models/exercises';
 	import { muscleGroupLabels, equipmentLabels, difficultyLabels } from '$lib/labels';
+	import { user } from '$lib/models/auth';
+	import MuscleMap from '$lib/components/MuscleMap.svelte';
+	import type { Gender } from '$lib/types';
+
+	const gender = $derived(($user?.gender as Gender) || 'male');
 
 	$effect(() => {
 		exercisePageOpened(page.params.id!);
 	});
+
+	function youtubeEmbed(url: string): string | null {
+		const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{6,})/);
+		return match ? `https://www.youtube.com/embed/${match[1]}` : null;
+	}
 </script>
 
 <div class="container narrow">
@@ -22,23 +28,55 @@
 		<a href="/exercises" class="back mono">← Все упражнения</a>
 
 		<header class="rise">
-			<p class="eyebrow">// {muscleGroupLabels[item.muscle_group]}</p>
-			<h1>{item.name}</h1>
-			<div class="chips">
-				<span class="chip static">{equipmentLabels[item.equipment]}</span>
-				<span class="chip static">{difficultyLabels[item.difficulty]}</span>
+			<div class="head-text">
+				<p class="eyebrow">// {muscleGroupLabels[item.muscle_group]}</p>
+				<h1>{item.name}</h1>
+				<div class="chips">
+					<span class="chip static">{equipmentLabels[item.equipment]}</span>
+					<span class="chip static">{difficultyLabels[item.difficulty]}</span>
+				</div>
+			</div>
+			<div class="head-map">
+				<MuscleMap variant={gender} highlighted={[item.muscle_group]} />
 			</div>
 		</header>
 
-		<section class="plate block rise" style="animation-delay: 0.08s">
-			<h2 class="mono">Что это</h2>
-			<p>{item.description}</p>
-		</section>
+		{#if item.description}
+			<section class="plate block rise" style="animation-delay: 0.08s">
+				<h2 class="mono">Что это</h2>
+				<p>{item.description}</p>
+			</section>
+		{/if}
 
-		<section class="plate block volt rise" style="animation-delay: 0.14s">
-			<h2 class="mono">Техника выполнения</h2>
-			<p>{item.technique}</p>
-		</section>
+		{#if item.technique}
+			<section class="plate block volt rise" style="animation-delay: 0.14s">
+				<h2 class="mono">Техника выполнения</h2>
+				<p>{item.technique}</p>
+			</section>
+		{/if}
+
+		{#if item.videos?.length}
+			<section class="plate block rise" style="animation-delay: 0.2s">
+				<h2 class="mono">Видео</h2>
+				<div class="videos">
+					{#each item.videos as video (video)}
+						{@const embed = youtubeEmbed(video)}
+						{#if embed}
+							<iframe
+								src={embed}
+								title="Видео: {item.name}"
+								frameborder="0"
+								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+								allowfullscreen
+							></iframe>
+						{:else}
+							<!-- svelte-ignore a11y_media_has_caption -->
+							<video src={video} controls preload="metadata"></video>
+						{/if}
+					{/each}
+				</div>
+			</section>
+		{/if}
 	{/if}
 </div>
 
@@ -60,11 +98,29 @@
 
 	header {
 		margin-block: 20px 28px;
+		display: grid;
+		grid-template-columns: 1fr 220px;
+		gap: 24px;
+		align-items: center;
+	}
+
+	.head-map {
+		opacity: 0.9;
 	}
 
 	h1 {
 		font-size: clamp(28px, 4.5vw, 44px);
 		margin-block: 12px 18px;
+	}
+
+	@media (max-width: 640px) {
+		header {
+			grid-template-columns: 1fr;
+		}
+
+		.head-map {
+			max-width: 280px;
+		}
 	}
 
 	.chips {
@@ -103,5 +159,20 @@
 
 	.block.volt h2 {
 		color: var(--volt);
+	}
+
+	.videos {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		gap: 12px;
+	}
+
+	.videos iframe,
+	.videos video {
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		border: 1px solid var(--line);
+		border-radius: 3px;
+		background: var(--bg-sunken);
 	}
 </style>

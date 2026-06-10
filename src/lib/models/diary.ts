@@ -13,10 +13,7 @@ export const loadWorkoutsFx = createEffect(() => {
 	return api.getWorkouts(userId);
 });
 
-export const workouts = createStore<Workout[]>([]).on(
-	loadWorkoutsFx.doneData,
-	(_, items) => items
-);
+export const workouts = createStore<Workout[]>([]).on(loadWorkoutsFx.doneData, (_, items) => items);
 
 export const workoutsLoading = loadWorkoutsFx.pending;
 

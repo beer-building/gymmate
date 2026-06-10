@@ -8,10 +8,7 @@ export const programsPageOpened = createEvent();
 
 export const loadProgramsFx = createEffect(() => api.getPrograms());
 
-export const programs = createStore<Program[]>([]).on(
-	loadProgramsFx.doneData,
-	(_, items) => items
-);
+export const programs = createStore<Program[]>([]).on(loadProgramsFx.doneData, (_, items) => items);
 
 export const programsLoading = loadProgramsFx.pending;
 export const programsError = createStore(false)
