@@ -1,0 +1,252 @@
+:root {
+	--bg: #0e0f11;
+	--bg-raised: #16181b;
+	--bg-sunken: #0a0b0c;
+	--line: #26282c;
+	--line-strong: #3a3d42;
+	--ink: #ececdf;
+	--muted: #8e9095;
+	--volt: #c9f231;
+	--volt-dim: #97b522;
+	--danger: #ff5d45;
+
+	--font-display: 'Unbounded', sans-serif;
+	--font-body: 'Manrope', sans-serif;
+	--font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html {
+	background: var(--bg);
+	color-scheme: dark;
+}
+
+body {
+	margin: 0;
+	font-family: var(--font-body);
+	color: var(--ink);
+	background:
+		radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201, 242, 49, 0.06), transparent),
+		var(--bg);
+	min-height: 100vh;
+	-webkit-font-smoothing: antialiased;
+}
+
+/* зернистость поверх всего фона */
+body::before {
+	content: '';
+	position: fixed;
+	inset: 0;
+	pointer-events: none;
+	z-index: 1000;
+	opacity: 0.05;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+}
+
+h1,
+h2,
+h3 {
+	font-family: var(--font-display);
+	font-weight: 800;
+	line-height: 1.05;
+	letter-spacing: -0.01em;
+	margin: 0;
+	text-wrap: balance;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+p {
+	line-height: 1.6;
+}
+
+::selection {
+	background: var(--volt);
+	color: var(--bg);
+}
+
+/* ---------- утилиты ---------- */
+
+.container {
+	width: min(1100px, 100% - 48px);
+	margin-inline: auto;
+}
+
+.eyebrow {
+	font-family: var(--font-mono);
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.22em;
+	color: var(--volt);
+}
+
+.muted {
+	color: var(--muted);
+}
+
+.mono {
+	font-family: var(--font-mono);
+}
+
+/* плита-карточка */
+.plate {
+	background: var(--bg-raised);
+	border: 1px solid var(--line);
+	border-radius: 4px;
+	position: relative;
+	transition:
+		border-color 0.18s ease,
+		transform 0.18s ease;
+}
+
+a.plate:hover {
+	border-color: var(--volt);
+	transform: translateY(-2px);
+}
+
+.chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-family: var(--font-mono);
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	padding: 5px 10px;
+	border: 1px solid var(--line-strong);
+	border-radius: 999px;
+	color: var(--muted);
+	background: transparent;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.chip:hover {
+	border-color: var(--volt-dim);
+	color: var(--ink);
+}
+
+.chip.active {
+	background: var(--volt);
+	border-color: var(--volt);
+	color: var(--bg);
+}
+
+.btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	font-family: var(--font-mono);
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	padding: 12px 22px;
+	border-radius: 3px;
+	border: 1px solid var(--volt);
+	background: var(--volt);
+	color: var(--bg);
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.btn:hover {
+	background: transparent;
+	color: var(--volt);
+}
+
+.btn:disabled {
+	opacity: 0.4;
+	pointer-events: none;
+}
+
+.btn.ghost {
+	background: transparent;
+	border-color: var(--line-strong);
+	color: var(--ink);
+}
+
+.btn.ghost:hover {
+	border-color: var(--volt);
+	color: var(--volt);
+}
+
+.btn.danger {
+	background: transparent;
+	border-color: var(--line-strong);
+	color: var(--danger);
+}
+
+.btn.danger:hover {
+	border-color: var(--danger);
+}
+
+.btn.sm {
+	padding: 7px 14px;
+	font-size: 11px;
+}
+
+.field {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.field label {
+	font-family: var(--font-mono);
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.15em;
+	color: var(--muted);
+}
+
+.field input,
+.field select,
+.field textarea {
+	font-family: var(--font-body);
+	font-size: 15px;
+	color: var(--ink);
+	background: var(--bg-sunken);
+	border: 1px solid var(--line-strong);
+	border-radius: 3px;
+	padding: 11px 14px;
+	outline: none;
+	transition: border-color 0.15s ease;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+	border-color: var(--volt);
+}
+
+.error-text {
+	color: var(--danger);
+	font-size: 14px;
+}
+
+/* появление блоков */
+@keyframes rise {
+	from {
+		opacity: 0;
+		transform: translateY(14px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+.rise {
+	animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
