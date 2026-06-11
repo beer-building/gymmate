@@ -1,6 +1,9 @@
 :root {
 	color-scheme: dark;
 
+	/* всё в rem: меняем базовый font-size — масштабируется весь UI */
+	font-size: 16px;
+
 	--bg: #0e0f11;
 	--bg-raised: #16181b;
 	--bg-sunken: #0a0b0c;
@@ -19,7 +22,12 @@
 	--safe-area-top: env(safe-area-inset-top, 0px);
 	--safe-area-bottom: env(safe-area-inset-bottom, 0px);
 
-	--border-radius: 3px;
+	/* радиусы — три уровня; --border-radius оставлен для совместимости */
+	--radius-sm: 0.375rem; /* 6px */
+	--radius-md: 0.5rem; /* 8px */
+	--radius-lg: 0.75rem; /* 12px */
+	--radius-pill: 999px;
+	--border-radius: var(--radius-sm);
 
 	/* spring-кривая для transition (linear() easing) */
 	--spring-transition: 0.5s
@@ -128,22 +136,31 @@
 		);
 }
 
+/* единственная точка масштабирования: на мобильном весь UI (текст, кнопки,
+   иконки, отступы — всё в rem) становится крупнее, как в нативном приложении */
+@media (max-width: 720px) {
+	:root {
+		font-size: 18px;
+	}
+}
+
 @media (prefers-color-scheme: light) {
 	:root {
 		color-scheme: light;
 
-		--bg: #f2f3ec;
-		--bg-raised: #fafbf5;
-		--bg-sunken: #e7e8df;
-		--line: #d9dbd0;
-		--line-strong: #b9bcab;
-		--ink: #181a12;
-		--muted: #70746a;
-		/* лайм затемнён до оливы: как текст/бордер на светлом фоне
-		   и как фон кнопок со светлым текстом поверх */
-		--volt: #647d00;
-		--volt-dim: #4f6300;
-		--danger: #d23b22;
+		/* нейтральные тона сдвинуты из зелени в тёплый крем — под оранжевый акцент */
+		--bg: #f4f0e7;
+		--bg-raised: #fbf8f1;
+		--bg-sunken: #e9e4d8;
+		--line: #dcd5c6;
+		--line-strong: #bdb29c;
+		--ink: #1b1710;
+		--muted: #746d5f;
+		/* акцент светлой темы — сочный апельсиновый; работает как текст/бордер
+		   на светлом фоне и как фон кнопок со светлым текстом поверх */
+		--volt: #ea580c;
+		--volt-dim: #c2410c;
+		--danger: #c81e1e;
 	}
 }
 
@@ -177,6 +194,14 @@ body::before {
 *::after,
 *::before {
 	box-sizing: border-box;
+	-webkit-tap-highlight-color: transparent;
+}
+
+button,
+a,
+[role='button'] {
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
 }
 
 h1,
@@ -207,19 +232,19 @@ p {
 /* ---------- утилиты ---------- */
 
 .container {
-	width: min(1100px, 100% - 48px);
+	width: min(1100px, 100% - 3rem);
 	margin-inline: auto;
 }
 
 @media (max-width: 480px) {
 	.container {
-		width: min(1100px, 100% - 28px);
+		width: min(1100px, 100% - 1.75rem);
 	}
 }
 
 .eyebrow {
 	font-family: var(--font-mono);
-	font-size: 11px;
+	font-size: 0.6875rem;
 	font-weight: 600;
 	text-transform: uppercase;
 	letter-spacing: 0.22em;
@@ -238,30 +263,57 @@ p {
 .plate {
 	background: var(--bg-raised);
 	border: 1px solid var(--line);
-	border-radius: calc(var(--border-radius) * 2);
+	border-radius: var(--radius-lg);
 	position: relative;
+	isolation: isolate;
 	transition:
 		border-color 0.18s ease,
-		transform 0.18s ease;
+		transform 0.18s ease,
+		box-shadow 0.25s ease;
 }
 
-a.plate:hover {
+.plate::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	pointer-events: none;
+	background: radial-gradient(
+		380px circle at var(--mx, 50%) var(--my, 0%),
+		oklch(from var(--volt) l c h / 0.07),
+		transparent 70%
+	);
+	opacity: 0;
+	transition: opacity 0.25s ease;
+	z-index: -1;
+}
+
+a.plate:hover,
+.plate.glow:hover {
 	border-color: var(--volt);
 	transform: translateY(-2px);
+	box-shadow:
+		0 10px 30px -16px oklch(from var(--volt) l c h / 0.45),
+		0 0 0 1px oklch(from var(--volt) l c h / 0.15);
+}
+
+a.plate:hover::before,
+.plate.glow:hover::before {
+	opacity: 1;
 }
 
 .chip {
 	display: inline-flex;
 	align-items: center;
-	gap: 6px;
+	gap: 0.375rem;
 	font-family: var(--font-mono);
-	font-size: 11px;
+	font-size: 0.6875rem; /* 11px */
 	font-weight: 600;
 	text-transform: uppercase;
 	letter-spacing: 0.08em;
-	padding: 5px 10px;
+	padding: 0.4375rem 0.75rem; /* 7px 12px */
 	border: 1px solid var(--line-strong);
-	border-radius: var(--border-radius);
+	border-radius: var(--radius-sm);
 	color: var(--muted);
 	background: transparent;
 	cursor: pointer;
@@ -292,12 +344,12 @@ a.plate:hover {
 .field {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
+	gap: 0.375rem;
 }
 
 .field label {
 	font-family: var(--font-mono);
-	font-size: 11px;
+	font-size: 0.6875rem;
 	font-weight: 600;
 	text-transform: uppercase;
 	letter-spacing: 0.15em;
@@ -308,12 +360,12 @@ a.plate:hover {
 .field select,
 .field textarea {
 	font-family: var(--font-body);
-	font-size: 15px;
+	font-size: 0.9375rem;
 	color: var(--ink);
 	background: var(--bg-sunken);
 	border: 1px solid var(--line-strong);
-	border-radius: var(--border-radius);
-	padding: 11px 14px;
+	border-radius: var(--radius-sm);
+	padding: 0.6875rem 0.875rem;
 	outline: none;
 	transition: border-color 0.15s ease;
 }
@@ -326,7 +378,7 @@ a.plate:hover {
 
 .error-text {
 	color: var(--danger);
-	font-size: 14px;
+	font-size: 0.875rem;
 }
 
 /* появление блоков */

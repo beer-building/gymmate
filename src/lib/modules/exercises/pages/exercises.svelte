@@ -13,6 +13,7 @@
 	const muscleGroup = exercisesModel.muscleGroup;
 	const searchQuery = exercisesModel.searchQuery;
 	const gender = authModel.gender;
+	const user = authModel.user;
 
 	let tab = $state<'map' | 'search'>('map');
 
@@ -62,22 +63,19 @@
 						selected={$muscleGroup}
 						onselect={(group) => exercisesModel.muscleGroupSelected(group)}
 					/>
-					<div class="gender-toggle" role="radiogroup" aria-label="Модель фигуры">
-						<button
-							class="chip"
-							class:active={$gender === 'male'}
-							onclick={() => authModel.genderSelected('male')}
-						>
-							М
-						</button>
-						<button
-							class="chip"
-							class:active={$gender === 'female'}
-							onclick={() => authModel.genderSelected('female')}
-						>
-							Ж
-						</button>
-					</div>
+					{#if !$user?.gender}
+						<div class="gender-toggle">
+							<Tabs
+								tabs={[
+									{ id: 'male', label: 'М' },
+									{ id: 'female', label: 'Ж' }
+								]}
+								label="Модель фигуры"
+								size="sm"
+								bind:active={() => $gender, (value) => authModel.genderSelected(value)}
+							/>
+						</div>
+					{/if}
 				</div>
 				<div class="chips">
 					<button
@@ -207,8 +205,11 @@
 	}
 
 	.gender-toggle {
-		display: flex;
-		gap: 6px;
+		width: min(100%, 160px);
+	}
+
+	.gender-toggle :global(.tabs) {
+		margin-bottom: 0;
 	}
 
 	.chips {
