@@ -4,15 +4,16 @@
 	import { goto } from '$app/navigation';
 	import { authModel } from '$lib/modules/auth/model';
 	import { Button } from '$lib/shared/components/button';
+	import { Icon } from '$lib/shared/components/icon';
 
 	let { children } = $props();
 
 	const user = authModel.user;
 
 	const navItems = [
-		{ href: '/exercises', label: 'Упражнения' },
-		{ href: '/programs', label: 'Программы' },
-		{ href: '/diary', label: 'Дневник' }
+		{ href: '/exercises', label: 'Упражнения', icon: 'dumbbell' },
+		{ href: '/programs', label: 'Программы', icon: 'book' },
+		{ href: '/diary', label: 'Дневник', icon: 'calendar' }
 	];
 
 	function logout() {
@@ -34,6 +35,7 @@
 		<nav>
 			{#each navItems as item (item.href)}
 				<a href={item.href} class:current={page.url.pathname.startsWith(item.href)}>
+					<Icon name={item.icon} size={0.9} />
 					{item.label}
 				</a>
 			{/each}
@@ -97,6 +99,9 @@
 	}
 
 	nav a {
+		display: inline-flex;
+		align-items: center;
+		gap: 7px;
 		font-family: var(--font-mono);
 		font-size: 12px;
 		font-weight: 600;

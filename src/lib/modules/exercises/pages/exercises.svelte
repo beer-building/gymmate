@@ -3,6 +3,7 @@
 	import { authModel } from '$lib/modules/auth/model';
 	import { MuscleMap } from '../components/muscle-map';
 	import { Tabs } from '$lib/shared/components/tabs';
+	import { Icon } from '$lib/shared/components/icon';
 	import { muscleGroupLabels, equipmentLabels, difficultyLabels } from '$lib/shared/helpers/labels';
 	import type { MuscleGroup } from '$lib/shared/types';
 
@@ -100,13 +101,16 @@
 		{:else}
 			<div class="field">
 				<label for="search">Название упражнения</label>
-				<input
-					id="search"
-					type="search"
-					placeholder="Например: жим, тяга, присед…"
-					value={$searchQuery}
-					oninput={(event) => exercisesModel.searchChanged(event.currentTarget.value)}
-				/>
+				<div class="search-input">
+					<span class="search-icon"><Icon name="search" size={1.05} /></span>
+					<input
+						id="search"
+						type="search"
+						placeholder="Например: жим, тяга, присед…"
+						value={$searchQuery}
+						oninput={(event) => exercisesModel.searchChanged(event.currentTarget.value)}
+					/>
+				</div>
 			</div>
 		{/if}
 	</div>
@@ -167,6 +171,25 @@
 	.filters {
 		padding: 24px;
 		margin-bottom: 24px;
+	}
+
+	.search-input {
+		position: relative;
+		display: flex;
+		align-items: center;
+	}
+
+	.search-icon {
+		position: absolute;
+		left: 13px;
+		display: inline-flex;
+		color: var(--muted);
+		pointer-events: none;
+	}
+
+	.search-input input {
+		width: 100%;
+		padding-left: 40px;
 	}
 
 	.map-layout {
