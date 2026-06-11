@@ -26,9 +26,6 @@ export type Difficulty = 'beginner' | 'intermediate' | 'advanced';
 
 export type Goal = 'mass' | 'weight_loss' | 'relief' | 'strength';
 
-// у необязательных select-полей PocketBase пустое значение — это ''
-export type DayOfWeek = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun';
-
 // У необязательных number-полей PocketBase 0 означает «не задано»
 // (target_reps_min/max, target_weight, rest_seconds, rir, rpe и т.п.).
 
@@ -59,7 +56,6 @@ export interface ProgramWorkout {
 	program: string;
 	name: string;
 	description: string;
-	day_of_week: DayOfWeek | '';
 	order_index: number;
 }
 
@@ -93,7 +89,6 @@ export interface UserProgramWorkout {
 	id: string;
 	user_program: string;
 	name: string;
-	day_of_week: DayOfWeek | '';
 	order_index: number;
 }
 

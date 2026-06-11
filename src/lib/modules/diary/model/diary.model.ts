@@ -101,7 +101,6 @@ export const forkProgramFx = createEffect(async (details: ProgramDetails) => {
 		const userWorkout = await api.createUserProgramWorkout({
 			user_program: userProgram.id,
 			name: workout.name,
-			day_of_week: workout.day_of_week,
 			order_index: workout.order_index
 		});
 		for (const item of exercisesByWorkout[workout.id] ?? []) {
@@ -146,7 +145,6 @@ export const importProgramFx = createEffect(async (file: File) => {
 		const created = await api.createUserProgramWorkout({
 			user_program: program.id,
 			name: workout.name,
-			day_of_week: workout.day_of_week,
 			order_index: workoutIndex + 1
 		});
 		let orderIndex = 0;

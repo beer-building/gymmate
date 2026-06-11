@@ -18,8 +18,8 @@ const program: UserProgram = {
 };
 
 const workouts: UserProgramWorkout[] = [
-	{ id: 'w2', user_program: 'p1', name: 'День Б', day_of_week: 'thu', order_index: 2 },
-	{ id: 'w1', user_program: 'p1', name: 'День А', day_of_week: 'mon', order_index: 1 }
+	{ id: 'w2', user_program: 'p1', name: 'День Б', order_index: 2 },
+	{ id: 'w1', user_program: 'p1', name: 'День А', order_index: 1 }
 ];
 
 function exercise(slug: string, name: string): Exercise {
@@ -104,7 +104,7 @@ describe('program-transfer', () => {
 		).toThrow('нет списка тренировок');
 	});
 
-	it('нормализует кривые значения: дни недели, числа, имена', () => {
+	it('нормализует кривые значения: числа, имена', () => {
 		const parsed = parseProgramFile(
 			JSON.stringify({
 				format: 'gymmate-program',
@@ -112,7 +112,6 @@ describe('program-transfer', () => {
 				name: 'X',
 				workouts: [
 					{
-						day_of_week: 'someday',
 						exercises: [
 							{ slug: 'prised', target_sets: -2, target_weight: '60', rest_seconds: 'долго' }
 						]
@@ -121,7 +120,6 @@ describe('program-transfer', () => {
 			})
 		);
 		expect(parsed.workouts[0].name).toBe('Тренировка 1');
-		expect(parsed.workouts[0].day_of_week).toBe('');
 		expect(parsed.workouts[0].exercises[0]).toEqual({
 			slug: 'prised',
 			name: 'prised',

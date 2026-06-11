@@ -75,7 +75,6 @@ export const addWorkoutFx = createEffect(
 		api.createUserProgramWorkout({
 			user_program: programId,
 			name: `Тренировка ${orderIndex}`,
-			day_of_week: '',
 			order_index: orderIndex
 		})
 );

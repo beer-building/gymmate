@@ -1,5 +1,4 @@
 import type {
-	DayOfWeek,
 	UserProgram,
 	UserProgramWorkout,
 	UserProgramWorkoutExercise
@@ -25,7 +24,6 @@ export interface ProgramFileExercise {
 
 export interface ProgramFileWorkout {
 	name: string;
-	day_of_week: DayOfWeek | '';
 	exercises: ProgramFileExercise[];
 }
 
@@ -51,7 +49,6 @@ export function serializeProgram(
 			.sort((a, b) => a.order_index - b.order_index)
 			.map((workout) => ({
 				name: workout.name,
-				day_of_week: workout.day_of_week,
 				exercises: exercises
 					.filter((item) => item.user_program_workout === workout.id && item.expand?.exercise)
 					.sort((a, b) => a.order_index - b.order_index)
@@ -68,8 +65,6 @@ export function serializeProgram(
 			}))
 	};
 }
-
-const DAYS_OF_WEEK = new Set(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']);
 
 function asNonNegativeNumber(value: unknown): number {
 	const num = typeof value === 'number' ? value : Number(value);
@@ -114,9 +109,6 @@ export function parseProgramFile(text: string): ProgramFile {
 			const exercises = Array.isArray(item.exercises) ? item.exercises : [];
 			return {
 				name: asText(item.name) || `Тренировка ${index + 1}`,
-				day_of_week: DAYS_OF_WEEK.has(item.day_of_week as string)
-					? (item.day_of_week as DayOfWeek)
-					: '',
 				exercises: exercises.map((exercise, exerciseIndex) => {
 					if (typeof exercise !== 'object' || exercise === null) {
 						throw new Error(
