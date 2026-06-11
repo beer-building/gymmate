@@ -1,6 +1,7 @@
 import { createEffect, createEvent, createStore, sample } from 'effector';
 import * as api from '../api';
 import { getExercises } from '$lib/modules/exercises/api';
+import { parseProgramFile } from '../helpers/program-transfer';
 import { pb } from '$lib/shared/api';
 import type { ProgramDetails } from '$lib/modules/programs/model';
 import type {
@@ -124,6 +125,54 @@ export const forkProgramFx = createEffect(async (details: ProgramDetails) => {
 export const createOwnProgramFx = createEffect(() =>
 	api.createUserProgram({ user: authUserId(), name: 'Моя программа' })
 );
+
+// Импорт программы из JSON-файла (экспортирован другом). Упражнения
+// матчатся по slug; отсутствующие в каталоге пропускаются и возвращаются
+// списком, чтобы показать пользователю.
+export const importProgramFx = createEffect(async (file: File) => {
+	const parsed = parseProgramFile(await file.text());
+	const userId = authUserId();
+	const catalog = await getExercises();
+	const bySlug = new Map(catalog.map((item) => [item.slug, item]));
+
+	const program = await api.createUserProgram({
+		user: userId,
+		name: parsed.name,
+		description: parsed.description,
+		started_at: new Date().toISOString()
+	});
+	const skipped: string[] = [];
+	for (const [workoutIndex, workout] of parsed.workouts.entries()) {
+		const created = await api.createUserProgramWorkout({
+			user_program: program.id,
+			name: workout.name,
+			day_of_week: workout.day_of_week,
+			order_index: workoutIndex + 1
+		});
+		let orderIndex = 0;
+		for (const exercise of workout.exercises) {
+			const catalogExercise = bySlug.get(exercise.slug);
+			if (!catalogExercise) {
+				skipped.push(exercise.name);
+				continue;
+			}
+			await api.createUserProgramWorkoutExercise({
+				user_program_workout: created.id,
+				exercise: catalogExercise.id,
+				order_index: orderIndex++,
+				target_sets: exercise.target_sets,
+				target_reps_min: exercise.target_reps_min,
+				target_reps_max: exercise.target_reps_max,
+				target_weight: exercise.target_weight,
+				rest_seconds: exercise.rest_seconds,
+				notes: exercise.notes
+			});
+		}
+	}
+	return { program, skipped };
+});
+
+sample({ clock: importProgramFx.done, target: loadMyProgramsFx });
 
 // старт тренировки из своей программы
 export const startUserWorkoutFx = createEffect(

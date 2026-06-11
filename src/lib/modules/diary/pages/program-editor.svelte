@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { userProgramModel } from '../model';
+	import { downloadProgramFile, serializeProgram } from '../helpers/program-transfer';
 	import { authModel } from '$lib/modules/auth/model';
 	import { ExerciseSelect } from '$lib/modules/exercises/components/exercise-select';
 	import { Input } from '$lib/shared/components/input';
@@ -70,6 +71,11 @@
 		userProgramModel.exerciseChanged({ id, data: { [field]: value } });
 	}
 
+	function exportProgram() {
+		if (!$editorProgram) return;
+		downloadProgramFile(serializeProgram($editorProgram, $editorWorkouts, $editorExercises));
+	}
+
 	function addExercise(workoutId: string) {
 		const exerciseId = pendingExercise[workoutId];
 		if (!exerciseId) return;
@@ -87,7 +93,17 @@
 		<a href="/diary" class="back mono"><Icon name="chevron-left" size={0.75} /> Дневник</a>
 
 		<header class="rise">
-			<p class="eyebrow">// моя программа</p>
+			<div class="header-row">
+				<p class="eyebrow">// моя программа</p>
+				<Button
+					kind="ghost"
+					size="sm"
+					onclick={exportProgram}
+					title="Скачать JSON, чтобы поделиться"
+				>
+					Экспорт
+				</Button>
+			</div>
 			<Input kind="ghost" size="lg" value={$editorProgram.name} onblur={renameProgram} />
 		</header>
 
@@ -199,6 +215,13 @@
 
 	header {
 		margin-block: 20px 24px;
+	}
+
+	.header-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
 	}
 
 	.block {

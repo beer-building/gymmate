@@ -14,8 +14,10 @@
 	const workoutLogsLoading = diaryModel.workoutLogsLoading;
 
 	let creating = $state(false);
+	let importing = $state(false);
 	let starting = $state<string | null>(null);
 	let tab = $state<'programs' | 'history'>('programs');
+	let importInput: HTMLInputElement | null = null;
 
 	$effect(() => {
 		if (!$user) {
@@ -32,6 +34,25 @@
 			goto(`/diary/programs/${program.id}`);
 		} finally {
 			creating = false;
+		}
+	}
+
+	async function importProgram(event: Event) {
+		const input = event.currentTarget as HTMLInputElement;
+		const file = input.files?.[0];
+		input.value = '';
+		if (!file) return;
+		importing = true;
+		try {
+			const { program, skipped } = await diaryModel.importProgramFx(file);
+			if (skipped.length > 0) {
+				alert(`Этих упражнений нет в каталоге, они пропущены:\n${skipped.join('\n')}`);
+			}
+			goto(`/diary/programs/${program.id}`);
+		} catch (error) {
+			alert(error instanceof Error ? error.message : 'Не удалось импортировать файл.');
+		} finally {
+			importing = false;
 		}
 	}
 
@@ -66,14 +87,26 @@
 			<p class="eyebrow">// журнал</p>
 			<h1>ДНЕВНИК</h1>
 		</div>
-		<Button onclick={createProgram} disabled={creating}>
-			{#if creating}
-				Создаю…
-			{:else}
-				<Icon name="plus" size={1} />
-				Новая программа
-			{/if}
-		</Button>
+		<div class="header-actions">
+			<Button kind="ghost" onclick={() => importInput?.click()} disabled={importing}>
+				{importing ? 'Импортирую…' : 'Импорт'}
+			</Button>
+			<Button onclick={createProgram} disabled={creating}>
+				{#if creating}
+					Создаю…
+				{:else}
+					<Icon name="plus" size={1} />
+					Новая программа
+				{/if}
+			</Button>
+		</div>
+		<input
+			bind:this={importInput}
+			type="file"
+			accept=".json,application/json"
+			hidden
+			onchange={importProgram}
+		/>
 	</header>
 
 	<Tabs
@@ -127,7 +160,6 @@
 					</ul>
 				</div>
 			{/each}
-			<Button kind="ghost" onclick={createProgram}>+ Создать свою программу</Button>
 		{/if}
 	{:else if $workoutLogsLoading && $workoutLogs.length === 0}
 		<p class="muted">Загружаю…</p>
@@ -189,6 +221,12 @@
 	h1 {
 		font-size: clamp(34px, 5vw, 56px);
 		margin-top: 12px;
+	}
+
+	.header-actions {
+		display: flex;
+		gap: 10px;
+		flex-wrap: wrap;
 	}
 
 	.program {
