@@ -66,6 +66,14 @@
      делает header containing block'ом для position: fixed -->
 <nav class="tab-bar" aria-label="Основные разделы">
 	{@render navLinks()}
+	<a href="/profile" class:current={page.url.pathname.startsWith('/profile')}>
+		{#if $user}
+			<Avatar user={$user} size="sm" />
+		{:else}
+			<Icon name="person" size={1.1} />
+		{/if}
+		Профиль
+	</a>
 </nav>
 
 <main>
@@ -296,8 +304,9 @@
 			margin-left: auto;
 		}
 
-		.user-name {
-			max-width: 90px;
+		/* профиль на мобильном живёт в таб-баре — аватарка в шапке дублировала бы его */
+		.user-link {
+			display: none;
 		}
 
 		main {
