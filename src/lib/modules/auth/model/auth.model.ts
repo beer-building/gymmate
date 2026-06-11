@@ -50,6 +50,24 @@ export const profileUpdateFx = createEffect(
 	}
 );
 
+export const avatarUploadFx = createEffect(async (file: File) => {
+	const record = pb.authStore.record;
+	if (!record) throw new Error('Not authenticated');
+	const formData = new FormData();
+	formData.append('avatar', file);
+	const updated = await pb.collection('users').update(record.id, formData);
+	pb.authStore.save(pb.authStore.token, updated);
+	return updated;
+});
+
+export const avatarRemoveFx = createEffect(async () => {
+	const record = pb.authStore.record;
+	if (!record) throw new Error('Not authenticated');
+	const updated = await pb.collection('users').update(record.id, { avatar: null });
+	pb.authStore.save(pb.authStore.token, updated);
+	return updated;
+});
+
 export const profileUpdated = createEvent<AuthRecord>();
 
 export const profileUpdateStarted = createEvent<{
@@ -67,6 +85,16 @@ sample({
 
 sample({
 	source: profileUpdateFx.doneData,
+	target: profileUpdated
+});
+
+sample({
+	source: avatarUploadFx.doneData,
+	target: profileUpdated
+});
+
+sample({
+	source: avatarRemoveFx.doneData,
 	target: profileUpdated
 });
 

@@ -32,29 +32,33 @@
 	.boxed {
 		background-color: var(--bg-sunken);
 		border: 1px solid var(--line-strong);
-		border-radius: var(--border-radius);
+		border-radius: var(--radius-sm);
 	}
 
 	.boxed:focus {
 		border-color: var(--volt);
 	}
 
+	/* фиксированный line-height в rem — высоты совпадают с кнопками и инпутами */
 	.boxed.sm {
-		padding: 7px 30px 7px 9px;
-		font-size: 13px;
-		background-position: right 10px center;
+		padding: 0.4375rem 1.875rem 0.4375rem 0.5625rem;
+		font-size: 0.8125rem;
+		line-height: 1rem;
+		background-position: right 0.625rem center;
 	}
 
 	.boxed.md {
-		padding: 11px 36px 11px 14px;
-		font-size: 15px;
-		background-position: right 12px center;
+		padding: 0.6875rem 2.25rem 0.6875rem 0.875rem;
+		font-size: 0.9375rem;
+		line-height: 1.125rem;
+		background-position: right 0.75rem center;
 	}
 
 	.boxed.lg {
-		padding: 14px 38px 14px 16px;
-		font-size: 16px;
-		background-position: right 14px center;
+		padding: 0.875rem 2.375rem 0.875rem 1rem;
+		font-size: 1rem;
+		line-height: 1.25rem;
+		background-position: right 0.875rem center;
 	}
 
 	.ghost {
@@ -62,8 +66,8 @@
 		border: none;
 		border-bottom: 1px dashed var(--line-strong);
 		border-radius: 0;
-		padding-inline: 0 26px;
-		background-position: right 6px center;
+		padding-inline: 0 1.625rem;
+		background-position: right 0.375rem center;
 	}
 
 	.ghost:hover:not(:focus) {
@@ -76,21 +80,21 @@
 	}
 
 	.ghost.sm {
-		font-size: 13px;
-		padding-block: 2px;
+		font-size: 0.8125rem;
+		padding-block: 0.125rem;
 	}
 
 	.ghost.md {
-		font-size: 16px;
+		font-size: 1rem;
 		font-weight: 600;
-		padding-block: 4px;
+		padding-block: 0.25rem;
 	}
 
 	.ghost.lg {
 		font-family: var(--font-display);
-		font-size: clamp(24px, 4vw, 36px);
+		font-size: clamp(1.5rem, 4vw, 2.25rem);
 		font-weight: 800;
 		letter-spacing: -0.01em;
-		padding-block: 6px;
+		padding-block: 0.375rem;
 	}
 </style>

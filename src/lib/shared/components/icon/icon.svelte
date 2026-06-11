@@ -38,11 +38,16 @@
 	.icon {
 		display: inline-flex;
 		line-height: 0;
+		flex-shrink: 0;
 	}
+	/* --size в rem — иконки растут вместе с font-size у :root */
 	.icon :global(svg) {
 		width: var(--size);
 		height: var(--size);
 	}
+	/* CSS только перекрашивает; толщина обводки задаётся в самом ассете:
+	   тонкие штриховые глифы несут stroke-width='1.0' (добирают вес),
+	   сплошные залитые — stroke-width='0' (обводка их заплывает) */
 	.icon :global(svg path) {
 		fill: currentColor;
 		stroke: currentColor;

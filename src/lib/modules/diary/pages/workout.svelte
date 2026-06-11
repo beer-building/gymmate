@@ -82,7 +82,7 @@
 		<p class="muted">Загружаю…</p>
 	{:else}
 		{@const log = $currentWorkoutLog}
-		<a href="/diary" class="back mono"><Icon name="chevron-left" size={0.75} /> Дневник</a>
+		<a href="/diary" class="back mono"><Icon name="chevron-left" size={0.9} /> Дневник</a>
 
 		<header class="rise">
 			<p class="eyebrow">// {formatDate(log.started_at)}</p>

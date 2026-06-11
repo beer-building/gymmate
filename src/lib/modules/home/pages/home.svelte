@@ -49,7 +49,12 @@
 
 	<section class="grid">
 		{#each sections as section, i (section.href)}
-			<a href={section.href} class="plate card rise" style="animation-delay: {0.1 + i * 0.08}s">
+			<a
+				href={section.href}
+				class="plate card rise"
+				data-tag={section.tag}
+				style="animation-delay: {0.1 + i * 0.08}s"
+			>
 				<span class="tag mono">{section.tag}</span>
 				<h2>{section.title}</h2>
 				<p class="muted">{section.text}</p>
@@ -75,6 +80,7 @@
 	.outline {
 		color: transparent;
 		-webkit-text-stroke: 2px var(--volt);
+		filter: drop-shadow(0 0 18px oklch(from var(--volt) l c h / 0.35));
 	}
 
 	.lead {
@@ -100,20 +106,49 @@
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
+		overflow: hidden;
 	}
 
 	.card h2 {
 		font-size: 19px;
+		position: relative;
+		z-index: 1;
 	}
 
 	.card p {
 		font-size: 14px;
 		margin: 0;
+		position: relative;
+		z-index: 1;
 	}
 
 	.tag {
 		color: var(--volt);
 		font-size: 12px;
+		position: relative;
+		z-index: 1;
+	}
+
+	.card::after {
+		content: attr(data-tag);
+		position: absolute;
+		right: -10px;
+		top: -28px;
+		font-family: var(--font-display);
+		font-weight: 900;
+		font-size: 140px;
+		line-height: 1;
+		color: transparent;
+		-webkit-text-stroke: 1px oklch(from var(--volt) l c h / 0.12);
+		pointer-events: none;
+		transition:
+			-webkit-text-stroke-color 0.3s ease,
+			transform 0.3s ease;
+	}
+
+	.card:hover::after {
+		-webkit-text-stroke-color: oklch(from var(--volt) l c h / 0.3);
+		transform: translate(-4px, 4px);
 	}
 
 	.go {

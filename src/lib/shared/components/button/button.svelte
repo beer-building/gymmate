@@ -3,7 +3,7 @@
 	import type { Snippet } from 'svelte';
 
 	type Kind = 'primary' | 'ghost' | 'danger' | 'icon' | 'icon-filled';
-	type Size = 'sm' | 'md';
+	type Size = 'sm' | 'md' | 'lg';
 
 	type CommonProps = {
 		kind?: Kind;
@@ -41,20 +41,23 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		gap: 8px;
+		gap: 0.5rem;
 		font-family: var(--font-mono);
-		font-size: 12px;
+		font-size: 0.75rem; /* 12px */
+		/* line-height согласован с inputs/selects — md = 2.625rem (42px) */
+		line-height: 1rem;
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.12em;
 		/* текст кнопки никогда не переносится на вторую строку */
 		white-space: nowrap;
-		padding: 12px 22px;
-		border-radius: var(--border-radius);
+		padding: 0.75rem 1.375rem;
+		border-radius: var(--radius-sm);
 		border: 1px solid var(--volt);
 		background: var(--volt);
 		color: var(--bg);
 		cursor: pointer;
+		-webkit-tap-highlight-color: transparent;
 		transition:
 			background 0.15s ease,
 			border-color 0.15s ease,
@@ -98,18 +101,23 @@
 	}
 
 	.btn.sm {
-		padding: 7px 14px;
-		font-size: 11px;
+		padding: 0.4375rem 0.875rem;
+		font-size: 0.6875rem; /* 11px */
+	}
+
+	.btn.lg {
+		padding: 1rem 1.75rem;
+		font-size: 0.8125rem;
 	}
 
 	/* цвет переопределяется снаружи через --icon-color (по умолчанию — удаление) */
 	.btn.icon {
-		width: 32px;
-		height: 32px;
+		width: 2rem;
+		height: 2rem;
 		padding: 0;
 		background: transparent;
 		border: none;
-		border-radius: var(--border-radius);
+		border-radius: var(--radius-sm);
 		color: var(--icon-color, var(--danger));
 		letter-spacing: 0;
 		text-transform: none;
@@ -123,12 +131,12 @@
 
 	/* квадратная иконка с постоянной заливкой; цвет — через --icon-color, по умолчанию нейтральный */
 	.btn.icon-filled {
-		width: 32px;
-		height: 32px;
+		width: 2rem;
+		height: 2rem;
 		padding: 0;
 		background: oklch(from var(--icon-color, var(--ink)) l c h / 0.1);
 		border: none;
-		border-radius: var(--border-radius);
+		border-radius: var(--radius-sm);
 		color: var(--icon-color, var(--ink));
 		letter-spacing: 0;
 		text-transform: none;

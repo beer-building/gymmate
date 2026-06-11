@@ -90,7 +90,7 @@
 	{:else if !$editorProgram}
 		<p class="muted">Загружаю…</p>
 	{:else}
-		<a href="/diary" class="back mono"><Icon name="chevron-left" size={0.75} /> Дневник</a>
+		<a href="/diary" class="back mono"><Icon name="chevron-left" size={0.9} /> Дневник</a>
 
 		<header class="rise">
 			<div class="header-row">

@@ -40,26 +40,30 @@
 	.boxed {
 		background: var(--bg-sunken);
 		border: 1px solid var(--line-strong);
-		border-radius: var(--border-radius);
+		border-radius: var(--radius-sm);
 	}
 
 	.boxed:focus {
 		border-color: var(--volt);
 	}
 
+	/* фиксированный line-height в rem — высоты совпадают с кнопками и селектами */
 	.boxed.sm {
-		padding: 7px 9px;
-		font-size: 13px;
+		padding: 0.4375rem 0.5625rem;
+		font-size: 0.8125rem;
+		line-height: 1rem;
 	}
 
 	.boxed.md {
-		padding: 11px 14px;
-		font-size: 15px;
+		padding: 0.6875rem 0.875rem;
+		font-size: 0.9375rem;
+		line-height: 1.125rem;
 	}
 
 	.boxed.lg {
-		padding: 14px 16px;
-		font-size: 16px;
+		padding: 0.875rem 1rem;
+		font-size: 1rem;
+		line-height: 1.25rem;
 	}
 
 	.ghost {
@@ -80,21 +84,21 @@
 	}
 
 	.ghost.sm {
-		font-size: 13px;
-		padding-block: 2px;
+		font-size: 0.8125rem;
+		padding-block: 0.125rem;
 	}
 
 	.ghost.md {
-		font-size: 16px;
+		font-size: 1rem;
 		font-weight: 600;
-		padding-block: 4px;
+		padding-block: 0.25rem;
 	}
 
 	.ghost.lg {
 		font-family: var(--font-display);
-		font-size: clamp(24px, 4vw, 36px);
+		font-size: clamp(1.5rem, 4vw, 2.25rem);
 		font-weight: 800;
 		letter-spacing: -0.01em;
-		padding-block: 6px;
+		padding-block: 0.375rem;
 	}
 </style>

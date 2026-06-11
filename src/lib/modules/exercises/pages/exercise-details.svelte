@@ -29,7 +29,7 @@
 	{:else}
 		{@const item = $currentExercise}
 		<a href="/exercises" class="back mono"
-			><Icon name="chevron-left" size={0.75} /> Все упражнения</a
+			><Icon name="chevron-left" size={0.9} /> Все упражнения</a
 		>
 
 		<header class="rise">
