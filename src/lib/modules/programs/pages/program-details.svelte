@@ -7,6 +7,7 @@
 	import { formatTargetReps } from '$lib/shared/helpers/labels';
 	import { Icon } from '$lib/shared/components/icon';
 	import { Button } from '$lib/shared/components/button';
+	import { DifficultyBar } from '../components/difficulty-bar';
 
 	const programDetails = programsModel.programDetails;
 	const programError = programsModel.programError;
@@ -46,14 +47,20 @@
 		<p class="muted">Загружаю…</p>
 	{:else}
 		{@const { program, workouts, exercisesByWorkout } = $programDetails}
-		<a href="/programs" class="back mono"><Icon name="chevron-left" size={0.75} /> Все программы</a>
+		<a href="/programs" class="back mono"><Icon name="chevron-left" size={0.9} /> Все программы</a>
 
 		<header class="rise">
 			<p class="eyebrow">// программа · {workouts.length} тренир.</p>
 			<h1>{program.name}</h1>
 			<p class="muted">{program.description}</p>
+			{#if program.difficulty}
+				<div class="difficulty">
+					<span class="mono cap">Сложность</span>
+					<DifficultyBar level={program.difficulty} />
+				</div>
+			{/if}
 			<Button onclick={addProgram} disabled={adding}>
-				{adding ? 'Добавляю…' : 'Добавить к себе и начать'}
+				{adding ? 'Добавляю…' : 'Добавить в дневник'}
 			</Button>
 		</header>
 
@@ -129,6 +136,25 @@
 
 	header :global(.btn) {
 		margin-top: 18px;
+	}
+
+	.difficulty {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin-top: 16px;
+	}
+
+	.difficulty .cap {
+		font-size: 11px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		color: var(--muted);
+	}
+
+	.difficulty :global(.bar) {
+		width: 90px;
 	}
 
 	.day {

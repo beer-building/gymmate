@@ -48,6 +48,7 @@ export interface Program {
 	name: string;
 	description: string;
 	goal: Goal | '';
+	difficulty: number; // 1..5, 0 = не указана
 	is_public: boolean;
 }
 

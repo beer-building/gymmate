@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { programsModel } from '../model';
 	import { goalLabels } from '$lib/shared/helpers/labels';
+	import { DifficultyBar } from '../components/difficulty-bar';
 
 	const programs = programsModel.programs;
 	const programsError = programsModel.programsError;
@@ -45,6 +46,9 @@
 					<div class="facts mono">
 						<span class="num">{$programWorkoutCounts[program.id] ?? 0}</span>
 						<span class="cap">тренир.</span>
+						{#if program.difficulty}
+							<DifficultyBar level={program.difficulty} />
+						{/if}
 					</div>
 				</a>
 			{/each}
@@ -127,6 +131,11 @@
 		text-transform: uppercase;
 		letter-spacing: 0.2em;
 		color: var(--muted);
+	}
+
+	.facts :global(.bar) {
+		width: 72px;
+		margin-top: 6px;
 	}
 
 	@media (max-width: 720px) {
