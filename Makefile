@@ -4,6 +4,10 @@
 DEPLOY_HOST ?= root@gymmate.freethinkel.dev
 DEPLOY_PATH ?= /root/gymmate-backend/www
 
+# build — phony, иначе make принимает каталог build/ за готовую цель
+# и деплоит старую сборку без пересборки
+.PHONY: build deploy
+
 build:
 	pnpm build
 
