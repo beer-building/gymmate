@@ -1,4 +1,6 @@
 :root {
+	color-scheme: dark;
+
 	--bg: #0e0f11;
 	--bg-raised: #16181b;
 	--bg-sunken: #0a0b0c;
@@ -13,6 +15,30 @@
 	--font-display: 'Unbounded', sans-serif;
 	--font-body: 'Manrope', sans-serif;
 	--font-mono: 'JetBrains Mono', monospace;
+
+	--safe-area-top: env(safe-area-inset-top, 0px);
+	--safe-area-bottom: env(safe-area-inset-bottom, 0px);
+
+	--border-radius: 3px;
+}
+
+@media (prefers-color-scheme: light) {
+	:root {
+		color-scheme: light;
+
+		--bg: #f2f3ec;
+		--bg-raised: #fafbf5;
+		--bg-sunken: #e7e8df;
+		--line: #d9dbd0;
+		--line-strong: #b9bcab;
+		--ink: #181a12;
+		--muted: #70746a;
+		/* лайм затемнён до оливы: как текст/бордер на светлом фоне
+		   и как фон кнопок со светлым текстом поверх */
+		--volt: #647d00;
+		--volt-dim: #4f6300;
+		--danger: #d23b22;
+	}
 }
 
 * {
@@ -21,7 +47,6 @@
 
 html {
 	background: var(--bg);
-	color-scheme: dark;
 }
 
 body {
@@ -29,7 +54,12 @@ body {
 	font-family: var(--font-body);
 	color: var(--ink);
 	background:
-		radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201, 242, 49, 0.06), transparent), var(--bg);
+		radial-gradient(
+			ellipse 80% 50% at 50% -10%,
+			color-mix(in srgb, var(--volt) 6%, transparent),
+			transparent
+		),
+		var(--bg);
 	min-height: 100vh;
 	-webkit-font-smoothing: antialiased;
 }
@@ -43,6 +73,12 @@ body::before {
 	z-index: 1000;
 	opacity: 0.05;
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+}
+
+*,
+*::after,
+*::before {
+	box-sizing: border-box;
 }
 
 h1,
@@ -77,6 +113,12 @@ p {
 	margin-inline: auto;
 }
 
+@media (max-width: 480px) {
+	.container {
+		width: min(1100px, 100% - 28px);
+	}
+}
+
 .eyebrow {
 	font-family: var(--font-mono);
 	font-size: 11px;
@@ -98,7 +140,7 @@ p {
 .plate {
 	background: var(--bg-raised);
 	border: 1px solid var(--line);
-	border-radius: 4px;
+	border-radius: calc(var(--border-radius) * 2);
 	position: relative;
 	transition:
 		border-color 0.18s ease,
@@ -121,7 +163,7 @@ a.plate:hover {
 	letter-spacing: 0.08em;
 	padding: 5px 10px;
 	border: 1px solid var(--line-strong);
-	border-radius: 999px;
+	border-radius: var(--border-radius);
 	color: var(--muted);
 	background: transparent;
 	cursor: pointer;
@@ -139,60 +181,7 @@ a.plate:hover {
 	color: var(--bg);
 }
 
-.btn {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	gap: 8px;
-	font-family: var(--font-mono);
-	font-size: 12px;
-	font-weight: 600;
-	text-transform: uppercase;
-	letter-spacing: 0.12em;
-	padding: 12px 22px;
-	border-radius: 3px;
-	border: 1px solid var(--volt);
-	background: var(--volt);
-	color: var(--bg);
-	cursor: pointer;
-	transition: all 0.15s ease;
-}
-
-.btn:hover {
-	background: transparent;
-	color: var(--volt);
-}
-
-.btn:disabled {
-	opacity: 0.4;
-	pointer-events: none;
-}
-
-.btn.ghost {
-	background: transparent;
-	border-color: var(--line-strong);
-	color: var(--ink);
-}
-
-.btn.ghost:hover {
-	border-color: var(--volt);
-	color: var(--volt);
-}
-
-.btn.danger {
-	background: transparent;
-	border-color: var(--line-strong);
-	color: var(--danger);
-}
-
-.btn.danger:hover {
-	border-color: var(--danger);
-}
-
-.btn.sm {
-	padding: 7px 14px;
-	font-size: 11px;
-}
+/* стили кнопок живут в shared/components/button */
 
 .field {
 	display: flex;
@@ -217,7 +206,7 @@ a.plate:hover {
 	color: var(--ink);
 	background: var(--bg-sunken);
 	border: 1px solid var(--line-strong);
-	border-radius: 3px;
+	border-radius: var(--border-radius);
 	padding: 11px 14px;
 	outline: none;
 	transition: border-color 0.15s ease;

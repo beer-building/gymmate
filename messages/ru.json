@@ -1,4 +1,19 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"hello_world": "Hello, {name} from ru!"
+	"hello_world": "Hello, {name} from ru!",
+	"profile_title": "Профиль",
+	"profile_subtitle": "Управление данными аккаунта",
+	"profile_name": "Имя",
+	"profile_name_placeholder": "Ваше имя",
+	"profile_email": "Email",
+	"profile_gender": "Пол",
+	"profile_gender_not_specified": "Не указан",
+	"profile_gender_male": "Мужской",
+	"profile_gender_female": "Женский",
+	"profile_weight": "Вес (кг)",
+	"profile_height": "Рост (см)",
+	"profile_birthdate": "Дата рождения",
+	"profile_cancel": "Отмена",
+	"profile_save": "Сохранить",
+	"profile_saving": "Сохранение..."
 }

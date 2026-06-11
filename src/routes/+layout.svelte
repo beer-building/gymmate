@@ -2,10 +2,12 @@
 	import '../app.css';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { user, loggedOut } from '$lib/models/auth';
-	import favicon from '$lib/assets/favicon.svg';
+	import { authModel } from '$lib/modules/auth/model';
+	import { Button } from '$lib/shared/components/button';
 
 	let { children } = $props();
+
+	const user = authModel.user;
 
 	const navItems = [
 		{ href: '/exercises', label: 'Упражнения' },
@@ -14,13 +16,12 @@
 	];
 
 	function logout() {
-		loggedOut();
+		authModel.loggedOut();
 		goto('/');
 	}
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
 	<title>GymMate — тренировки в зале</title>
 </svelte:head>
 
@@ -40,10 +41,10 @@
 
 		<div class="auth-zone">
 			{#if $user}
-				<span class="user mono">{$user.name || $user.email}</span>
-				<button class="btn ghost sm" onclick={logout}>Выйти</button>
+				<a href="/profile" class="user-link mono">{$user.name || $user.email}</a>
+				<Button kind="ghost" size="sm" onclick={logout}>Выйти</Button>
 			{:else}
-				<a class="btn sm" href="/login">Войти</a>
+				<Button size="sm" href="/login">Войти</Button>
 			{/if}
 		</div>
 	</div>
@@ -68,6 +69,7 @@
 		background: color-mix(in srgb, var(--bg) 85%, transparent);
 		backdrop-filter: blur(12px);
 		border-bottom: 1px solid var(--line);
+		padding-top: var(--safe-area-top);
 	}
 
 	.bar {
@@ -102,8 +104,9 @@
 		letter-spacing: 0.12em;
 		color: var(--muted);
 		padding: 8px 14px;
-		border-radius: 3px;
+		border-radius: var(--border-radius);
 		transition: color 0.15s ease;
+		white-space: nowrap;
 	}
 
 	nav a:hover {
@@ -120,13 +123,18 @@
 		gap: 14px;
 	}
 
-	.user {
+	.user-link {
 		font-size: 12px;
 		color: var(--muted);
 		max-width: 160px;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+		transition: color 0.15s ease;
+	}
+
+	.user-link:hover {
+		color: var(--volt);
 	}
 
 	main {
@@ -137,6 +145,7 @@
 	footer {
 		border-top: 1px solid var(--line);
 		padding-block: 24px;
+		padding-bottom: calc(24px + var(--safe-area-bottom));
 	}
 
 	footer .container {
@@ -161,8 +170,11 @@
 		}
 
 		nav {
+			/* flex: 1 задаёт flex-basis: 0 и не даёт переноситься — сбрасываем */
+			flex: none;
 			order: 3;
 			width: 100%;
+			overflow-x: auto;
 		}
 
 		nav a {
@@ -171,6 +183,19 @@
 
 		.auth-zone {
 			margin-left: auto;
+		}
+
+		.user-link {
+			max-width: 110px;
+		}
+
+		main {
+			padding-block: 28px 56px;
+		}
+
+		footer .container {
+			flex-direction: column;
+			gap: 6px;
 		}
 	}
 </style>

@@ -1,4 +1,19 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"hello_world": "Hello, {name} from en!"
+	"hello_world": "Hello, {name} from en!",
+	"profile_title": "Profile",
+	"profile_subtitle": "Account settings management",
+	"profile_name": "Name",
+	"profile_name_placeholder": "Your name",
+	"profile_email": "Email",
+	"profile_gender": "Gender",
+	"profile_gender_not_specified": "Not specified",
+	"profile_gender_male": "Male",
+	"profile_gender_female": "Female",
+	"profile_weight": "Weight (kg)",
+	"profile_height": "Height (cm)",
+	"profile_birthdate": "Date of birth",
+	"profile_cancel": "Cancel",
+	"profile_save": "Save",
+	"profile_saving": "Saving..."
 }
