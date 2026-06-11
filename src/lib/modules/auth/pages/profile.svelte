@@ -4,6 +4,7 @@
 	import { Button } from '$lib/shared/components/button';
 	import { Input } from '$lib/shared/components/input';
 	import { Select } from '$lib/shared/components/select';
+	import { Icon } from '$lib/shared/components/icon';
 	import type { Gender } from '$lib/shared/types';
 
 	const user = authModel.user;
@@ -57,7 +58,7 @@
 {#if $user}
 	<div class="container profile-page">
 		<div class="header">
-			<h1>Профиль</h1>
+			<h1><Icon name="person" size={1.6} /> Профиль</h1>
 			<p class="muted">Управление данными аккаунта</p>
 		</div>
 
@@ -135,8 +136,12 @@
 				{/if}
 
 				<div class="actions">
-					<Button kind="ghost" onclick={cancel}>Отмена</Button>
+					<Button kind="ghost" onclick={cancel}>
+						<Icon name="close" size={0.85} />
+						Отмена
+					</Button>
 					<Button onclick={save} disabled={saving}>
+						<Icon name="check" size={0.85} />
 						{saving ? 'Сохранение...' : 'Сохранить'}
 					</Button>
 				</div>
@@ -156,8 +161,15 @@
 	}
 
 	.header h1 {
+		display: flex;
+		align-items: center;
+		gap: 12px;
 		font-size: clamp(28px, 4vw, 36px);
 		margin-bottom: 8px;
+	}
+
+	.header h1 :global(.icon) {
+		color: var(--volt);
 	}
 
 	.form-card {
