@@ -14,6 +14,8 @@ const CACHE = `gymmate-cache-${version}`;
 const ASSETS = [...build, ...files];
 
 sw.addEventListener('install', (event) => {
+	// не ждём закрытия всех вкладок/PWA — новая версия активируется сразу
+	sw.skipWaiting();
 	event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(ASSETS)));
 });
 
