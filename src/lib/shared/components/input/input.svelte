@@ -37,6 +37,30 @@
 		margin: 0;
 	}
 
+	/* date: сбрасываем UA-оформление, иначе у поля свой шрифт, своя высота
+	   и интринсик-ширина, из-за которой оно вылезает за форму */
+	.input[type='date'] {
+		appearance: none;
+		display: block;
+		font-family: var(--font-mono);
+	}
+
+	.input[type='date']::-webkit-datetime-edit {
+		font: inherit;
+		padding: 0;
+	}
+
+	.input[type='date']::-webkit-date-and-time-value {
+		font: inherit;
+		text-align: left;
+		margin: 0;
+	}
+
+	.input[type='date']::-webkit-calendar-picker-indicator {
+		cursor: pointer;
+		opacity: 0.6;
+	}
+
 	.boxed {
 		background: var(--bg-sunken);
 		border: 1px solid var(--line-strong);
@@ -64,6 +88,20 @@
 		padding: 0.875rem 1rem;
 		font-size: 1rem;
 		line-height: 1.25rem;
+	}
+
+	/* date игнорирует line-height для внутренних частей — высота задаётся явно,
+	   чтобы совпадать с текстовыми: line-height + 2×padding + 2×border */
+	.boxed.sm[type='date'] {
+		height: calc(1rem + 2 * 0.4375rem + 2px);
+	}
+
+	.boxed.md[type='date'] {
+		height: calc(1.125rem + 2 * 0.6875rem + 2px);
+	}
+
+	.boxed.lg[type='date'] {
+		height: calc(1.25rem + 2 * 0.875rem + 2px);
 	}
 
 	.ghost {
