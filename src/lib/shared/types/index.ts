@@ -82,6 +82,7 @@ export interface UserProgram {
 	source_program: string; // '' = создана с нуля
 	name: string;
 	description: string;
+	difficulty: number; // snapshot из источника на момент форка; 0 = не указана
 	started_at: string;
 	archived_at: string;
 }

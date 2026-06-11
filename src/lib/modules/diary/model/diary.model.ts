@@ -95,6 +95,7 @@ export const forkProgramFx = createEffect(async (details: ProgramDetails) => {
 		source_program: program.id,
 		name: program.name,
 		description: program.description,
+		difficulty: program.difficulty || undefined,
 		started_at: new Date().toISOString()
 	});
 	for (const workout of workouts) {
@@ -138,6 +139,7 @@ export const importProgramFx = createEffect(async (file: File) => {
 		user: userId,
 		name: parsed.name,
 		description: parsed.description,
+		difficulty: parsed.difficulty || undefined,
 		started_at: new Date().toISOString()
 	});
 	const skipped: string[] = [];

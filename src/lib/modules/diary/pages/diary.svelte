@@ -6,6 +6,7 @@
 	import { Tabs } from '$lib/shared/components/tabs';
 	import { Icon } from '$lib/shared/components/icon';
 	import { Button } from '$lib/shared/components/button';
+	import { DifficultyBar } from '$lib/shared/components/difficulty-bar';
 	import type { UserProgram, UserProgramWorkout } from '$lib/shared/types';
 
 	const user = authModel.user;
@@ -131,7 +132,12 @@
 			{#each $myPrograms as { program, workouts }, i (program.id)}
 				<div class="plate program rise" style="animation-delay: {i * 0.06}s">
 					<div class="program-head">
-						<h3><a href="/diary/programs/{program.id}">{program.name}</a></h3>
+						<div class="program-title">
+							<h3><a href="/diary/programs/{program.id}">{program.name}</a></h3>
+							{#if program.difficulty}
+								<DifficultyBar level={program.difficulty} />
+							{/if}
+						</div>
 						<div class="program-actions">
 							<a class="archive mono" href="/diary/programs/{program.id}">изменить</a>
 							<button
@@ -241,6 +247,18 @@
 		gap: 8px 12px;
 		margin-bottom: 14px;
 		flex-wrap: wrap;
+	}
+
+	.program-title {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		min-width: 0;
+	}
+
+	.program-title :global(.bar) {
+		width: 64px;
+		flex-shrink: 0;
 	}
 
 	.program-head h3 {

@@ -7,7 +7,7 @@
 	import { formatTargetReps } from '$lib/shared/helpers/labels';
 	import { Icon } from '$lib/shared/components/icon';
 	import { Button } from '$lib/shared/components/button';
-	import { DifficultyBar } from '../components/difficulty-bar';
+	import { DifficultyBar } from '$lib/shared/components/difficulty-bar';
 
 	const programDetails = programsModel.programDetails;
 	const programError = programsModel.programError;

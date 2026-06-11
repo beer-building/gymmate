@@ -26,6 +26,7 @@ export async function createUserProgram(data: {
 	name: string;
 	source_program?: string;
 	description?: string;
+	difficulty?: number;
 	started_at?: string;
 }): Promise<UserProgram> {
 	return pb.collection('user_programs').create<UserProgram>(data, noCancel);

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { programsModel } from '../model';
 	import { goalLabels } from '$lib/shared/helpers/labels';
-	import { DifficultyBar } from '../components/difficulty-bar';
+	import { DifficultyBar } from '$lib/shared/components/difficulty-bar';
 
 	const programs = programsModel.programs;
 	const programsError = programsModel.programsError;

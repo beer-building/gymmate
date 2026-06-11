@@ -32,6 +32,7 @@ export interface ProgramFile {
 	version: number;
 	name: string;
 	description: string;
+	difficulty: number; // 1..5, 0 = не указана
 	workouts: ProgramFileWorkout[];
 }
 
@@ -45,6 +46,7 @@ export function serializeProgram(
 		version: PROGRAM_FILE_VERSION,
 		name: program.name,
 		description: program.description,
+		difficulty: program.difficulty || 0,
 		workouts: [...workouts]
 			.sort((a, b) => a.order_index - b.order_index)
 			.map((workout) => ({
@@ -75,6 +77,11 @@ function asText(value: unknown): string {
 	return typeof value === 'string' ? value.trim() : '';
 }
 
+function asDifficulty(value: unknown): number {
+	const num = typeof value === 'number' ? value : Number(value);
+	return Number.isInteger(num) && num >= 1 && num <= 5 ? num : 0;
+}
+
 export function parseProgramFile(text: string): ProgramFile {
 	let raw: unknown;
 	try {
@@ -101,6 +108,7 @@ export function parseProgramFile(text: string): ProgramFile {
 		version: PROGRAM_FILE_VERSION,
 		name,
 		description: asText(data.description),
+		difficulty: asDifficulty(data.difficulty),
 		workouts: data.workouts.map((workout, index) => {
 			if (typeof workout !== 'object' || workout === null) {
 				throw new Error(`Тренировка ${index + 1} в файле задана неверно.`);

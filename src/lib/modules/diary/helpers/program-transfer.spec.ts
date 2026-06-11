@@ -13,6 +13,7 @@ const program: UserProgram = {
 	source_program: '',
 	name: 'Фулбоди',
 	description: 'Три раза в неделю',
+	difficulty: 3,
 	started_at: '',
 	archived_at: ''
 };
@@ -110,6 +111,7 @@ describe('program-transfer', () => {
 				format: 'gymmate-program',
 				version: 1,
 				name: 'X',
+				difficulty: 99,
 				workouts: [
 					{
 						exercises: [
@@ -119,6 +121,7 @@ describe('program-transfer', () => {
 				]
 			})
 		);
+		expect(parsed.difficulty).toBe(0);
 		expect(parsed.workouts[0].name).toBe('Тренировка 1');
 		expect(parsed.workouts[0].exercises[0]).toEqual({
 			slug: 'prised',
