@@ -172,7 +172,8 @@
 		{/each}
 
 		<Button class="rise" onclick={() => userProgramModel.workoutAdded()}>
-			+ Добавить тренировку
+			<Icon name="plus" size={1} />
+			Добавить тренировку
 		</Button>
 	{/if}
 </div>
