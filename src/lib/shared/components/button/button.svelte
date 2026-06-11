@@ -55,7 +55,15 @@
 		background: var(--volt);
 		color: var(--bg);
 		cursor: pointer;
-		transition: all 0.15s ease;
+		transition:
+			background 0.15s ease,
+			border-color 0.15s ease,
+			color 0.15s ease,
+			transform var(--spring-transition);
+	}
+
+	.btn:active {
+		transform: scale(0.96);
 	}
 
 	.btn:hover {
@@ -109,7 +117,7 @@
 	}
 
 	.btn.icon:hover {
-		background: color-mix(in srgb, var(--icon-color, var(--danger)) 14%, transparent);
+		background: oklch(from var(--icon-color, var(--danger)) l c h / 0.14);
 		color: var(--icon-color, var(--danger));
 	}
 
@@ -118,7 +126,7 @@
 		width: 32px;
 		height: 32px;
 		padding: 0;
-		background: color-mix(in srgb, var(--icon-color, var(--ink)) 10%, transparent);
+		background: oklch(from var(--icon-color, var(--ink)) l c h / 0.1);
 		border: none;
 		border-radius: var(--border-radius);
 		color: var(--icon-color, var(--ink));
@@ -128,7 +136,7 @@
 	}
 
 	.btn.icon-filled:hover {
-		background: color-mix(in srgb, var(--icon-color, var(--ink)) 20%, transparent);
+		background: oklch(from var(--icon-color, var(--ink)) l c h / 0.2);
 		color: var(--icon-color, var(--ink));
 	}
 </style>

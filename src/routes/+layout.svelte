@@ -68,7 +68,7 @@
 		position: sticky;
 		top: 0;
 		z-index: 10;
-		background: color-mix(in srgb, var(--bg) 85%, transparent);
+		background: oklch(from var(--bg) l c h / 0.85);
 		backdrop-filter: blur(12px);
 		border-bottom: 1px solid var(--line);
 		padding-top: var(--safe-area-top);
