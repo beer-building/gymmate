@@ -31,7 +31,7 @@ export interface Dashboard {
 	exerciseSeries: ExerciseSeries[];
 }
 
-export const homePageOpened = createEvent();
+export const profilePageOpened = createEvent();
 
 export const loadDashboardFx = createEffect(async (): Promise<Dashboard> => {
 	const userId = pb.authStore.record?.id;
@@ -83,4 +83,4 @@ export const dashboard = createStore<Dashboard | null>(null).on(
 
 export const dashboardLoading = loadDashboardFx.pending;
 
-sample({ clock: homePageOpened, target: loadDashboardFx });
+sample({ clock: profilePageOpened, target: loadDashboardFx });
