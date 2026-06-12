@@ -3,6 +3,7 @@
 	import { diaryModel } from '../model';
 	import { authModel } from '$lib/modules/auth/model';
 	import { formatDate } from '$lib/shared/helpers/labels';
+	import { LLM_PROMPT } from '../helpers/llm-prompt';
 	import { Tabs } from '$lib/shared/components/tabs';
 	import { Icon } from '$lib/shared/components/icon';
 	import { Button } from '$lib/shared/components/button';
@@ -82,6 +83,18 @@
 			diaryModel.programArchiveRequested(id);
 		}
 	}
+
+	let copied = $state(false);
+
+	async function copyPrompt() {
+		try {
+			await navigator.clipboard.writeText(LLM_PROMPT);
+			copied = true;
+			setTimeout(() => (copied = false), 2000);
+		} catch {
+			alert('Не удалось скопировать в буфер обмена.');
+		}
+	}
 </script>
 
 <div class="container narrow">
@@ -111,6 +124,13 @@
 			onchange={importProgram}
 		/>
 	</header>
+
+	<div class="llm-notice rise">
+		<p>
+			Составить программу можно через ChatGPT, Claude и другие LLM — используй
+			<button class="link-btn" onclick={copyPrompt}>{copied ? 'Скопировано' : 'промпт'}</button>.
+		</p>
+	</div>
 
 	<Tabs
 		tabs={[
@@ -239,6 +259,16 @@
 		display: flex;
 		gap: 10px;
 		flex-wrap: wrap;
+	}
+
+	.llm-notice {
+		margin-bottom: 24px;
+		font-size: 13px;
+		color: var(--muted);
+	}
+
+	.llm-notice p {
+		margin: 0;
 	}
 
 	.program {
