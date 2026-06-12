@@ -4,6 +4,7 @@
 	import { diaryModel } from '../model';
 	import { authModel } from '$lib/modules/auth/model';
 	import { ExerciseSelect } from '$lib/modules/exercises/components/exercise-select';
+	import { RestTimer } from '../components/rest-timer';
 	import { formatDate, formatTargetReps } from '$lib/shared/helpers/labels';
 	import { Icon } from '$lib/shared/components/icon';
 	import { Button } from '$lib/shared/components/button';
@@ -16,6 +17,7 @@
 	const logSets = diaryModel.logSets;
 	const workoutError = diaryModel.workoutError;
 	const workoutPlan = diaryModel.workoutPlan;
+	const lastSet = diaryModel.lastSet;
 
 	let selectedExercise = $state('');
 	let reps = $state(10);
@@ -37,6 +39,38 @@
 			notesDraft = $currentWorkoutLog.notes;
 			notesInitialized = true;
 		}
+	});
+
+	// история по выбранному упражнению — для подсказки и автоподстановки
+	$effect(() => {
+		if (selectedExercise) diaryModel.lastSetRequested(selectedExercise);
+	});
+
+	// Автоподстановка веса/повторов при выборе упражнения: сначала последний
+	// подход в текущей тренировке, иначе — из прошлых, когда догрузится.
+	// prefilledFor защищает уже подставленные значения от перезаписи.
+	let prefilledFor = '';
+
+	$effect(() => {
+		if (!selectedExercise || prefilledFor === selectedExercise) return;
+		const logExercise = $logExercises.find((item) => item.exercise === selectedExercise);
+		const last = logExercise
+			? $logSets.findLast((set) => set.workout_log_exercise === logExercise.id)
+			: undefined;
+		if (last) {
+			prefilledFor = selectedExercise;
+			if (last.reps) reps = last.reps;
+			weight = last.weight || 0;
+		}
+	});
+
+	$effect(() => {
+		const history = $lastSet;
+		if (!history?.set || history.exerciseId !== selectedExercise) return;
+		if (prefilledFor === selectedExercise) return;
+		prefilledFor = selectedExercise;
+		if (history.set.reps) reps = history.set.reps;
+		weight = history.set.weight || 0;
 	});
 
 	// упражнения лога с их подходами, в порядке добавления
@@ -152,6 +186,12 @@
 					<Icon name="plus" />
 				</Button>
 			</form>
+			{#if $lastSet?.set && $lastSet.exerciseId === selectedExercise}
+				<p class="last-hint mono">
+					в прошлый раз: <b>{$lastSet.set.weight || 0} кг × {$lastSet.set.reps}</b>
+					· {formatDate($lastSet.set.created)}
+				</p>
+			{/if}
 		</section>
 
 		{#each grouped as group (group.id)}
@@ -199,6 +239,8 @@
 		</section>
 	{/if}
 </div>
+
+<RestTimer />
 
 <style>
 	.narrow {
@@ -311,6 +353,19 @@
 		--icon-color: var(--volt);
 		width: 45px;
 		height: 45px;
+	}
+
+	.last-hint {
+		margin: 12px 0 0;
+		font-size: 11px;
+		color: var(--muted);
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+	}
+
+	.last-hint b {
+		color: var(--volt);
+		font-weight: 600;
 	}
 
 	.group-head {

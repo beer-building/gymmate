@@ -371,6 +371,70 @@ logExercises.on(deleteSetFx.doneData, (exercises, { removedExercise }) =>
 	removedExercise ? exercises.filter((item) => item.id !== removedExercise) : exercises
 );
 
+// --- последний подход упражнения: автоподстановка веса/повторов ---
+
+export const lastSetRequested = createEvent<string>();
+
+export const loadLastSetFx = createEffect(
+	async ({ exerciseId, excludeLogId }: { exerciseId: string; excludeLogId: string }) => ({
+		exerciseId,
+		set: await api.getLastExerciseSet(authUserId(), exerciseId, excludeLogId)
+	})
+);
+
+// exerciseId хранится рядом с подходом: ответ может прийти после того,
+// как пользователь уже выбрал другое упражнение
+export const lastSet = createStore<{ exerciseId: string; set: WorkoutLogSet | null } | null>(null)
+	.on(loadLastSetFx.doneData, (_, data) => data)
+	.reset(lastSetRequested)
+	.reset(workoutPageOpened);
+
+sample({
+	clock: lastSetRequested,
+	source: currentWorkoutLog,
+	filter: (log) => log !== null,
+	fn: (log, exerciseId) => ({ exerciseId, excludeLogId: log!.id }),
+	target: loadLastSetFx
+});
+
+// --- таймер отдыха между подходами ---
+
+export const DEFAULT_REST_SECONDS = 90;
+
+export const restStarted = createEvent<number>();
+export const restStopped = createEvent();
+export const restExtended = createEvent<number>();
+
+export interface RestTimer {
+	endsAt: number;
+	totalSeconds: number;
+}
+
+export const restTimer = createStore<RestTimer | null>(null)
+	.on(restStarted, (_, seconds) => ({
+		endsAt: Date.now() + seconds * 1000,
+		totalSeconds: seconds
+	}))
+	.on(restExtended, (timer, seconds) =>
+		timer
+			? { endsAt: timer.endsAt + seconds * 1000, totalSeconds: timer.totalSeconds + seconds }
+			: timer
+	)
+	.reset(restStopped)
+	.reset(workoutPageOpened);
+
+// после записанного подхода отдых стартует сам; длительность — из плана
+// упражнения, если оно там есть. На завершённой тренировке (правка задним
+// числом) таймер не нужен.
+sample({
+	clock: addSetFx.done,
+	source: { plan: workoutPlan, log: currentWorkoutLog },
+	filter: ({ log }) => log !== null && !log.completed_at,
+	fn: ({ plan }, { params }) =>
+		plan.find((item) => item.exercise === params.exerciseId)?.rest_seconds || DEFAULT_REST_SECONDS,
+	target: restStarted
+});
+
 // --- заметки и завершение тренировки ---
 
 export const workoutUpdated = createEvent<Partial<WorkoutLog>>();

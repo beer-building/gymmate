@@ -214,3 +214,36 @@ export async function updateWorkoutLogSet(
 export async function deleteWorkoutLogSet(id: string): Promise<void> {
 	await pb.collection('workout_log_sets').delete(id, noCancel);
 }
+
+// --- агрегаты по всей истории (дашборд на главной) ---
+
+export async function getAllUserLogExercises(userId: string): Promise<WorkoutLogExercise[]> {
+	return pb.collection('workout_log_exercises').getFullList<WorkoutLogExercise>({
+		filter: pb.filter('workout_log.user = {:id}', { id: userId })
+	});
+}
+
+export async function getAllUserSets(userId: string): Promise<WorkoutLogSet[]> {
+	return pb.collection('workout_log_sets').getFullList<WorkoutLogSet>({
+		filter: pb.filter('workout_log_exercise.workout_log.user = {:id}', { id: userId }),
+		sort: 'created'
+	});
+}
+
+// последний рабочий подход упражнения из прошлых тренировок —
+// для автоподстановки веса/повторов в форме
+export async function getLastExerciseSet(
+	userId: string,
+	exerciseId: string,
+	excludeLogId: string
+): Promise<WorkoutLogSet | null> {
+	const result = await pb.collection('workout_log_sets').getList<WorkoutLogSet>(1, 1, {
+		filter: pb.filter(
+			'workout_log_exercise.exercise = {:exercise} && workout_log_exercise.workout_log.user = {:user} && workout_log_exercise.workout_log != {:log} && is_warmup = false',
+			{ exercise: exerciseId, user: userId, log: excludeLogId }
+		),
+		sort: '-created',
+		...noCancel
+	});
+	return result.items[0] ?? null;
+}

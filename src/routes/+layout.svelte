@@ -26,11 +26,18 @@
 		}
 	}
 
+	// порядок — по частоте использования: дневник чаще каталога
 	const navItems = [
-		{ href: '/exercises', label: 'Упражнения', icon: 'dumbbell' },
+		{ href: '/', label: 'Главная', icon: 'home' },
+		{ href: '/diary', label: 'Дневник', icon: 'calendar' },
 		{ href: '/programs', label: 'Программы', icon: 'book' },
-		{ href: '/diary', label: 'Дневник', icon: 'calendar' }
+		{ href: '/exercises', label: 'Упражнения', icon: 'dumbbell' }
 	];
+
+	// '/' префикс любого пути — главной нужно точное совпадение
+	function isCurrent(href: string): boolean {
+		return href === '/' ? page.url.pathname === '/' : page.url.pathname.startsWith(href);
+	}
 
 	function logout() {
 		authModel.loggedOut();
@@ -46,7 +53,7 @@
 
 {#snippet navLinks()}
 	{#each navItems as item (item.href)}
-		<a href={item.href} class:current={page.url.pathname.startsWith(item.href)}>
+		<a href={item.href} class:current={isCurrent(item.href)}>
 			<Icon name={item.icon} size={1.1} />
 			{item.label}
 		</a>
