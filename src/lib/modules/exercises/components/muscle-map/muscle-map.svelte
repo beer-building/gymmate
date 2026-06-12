@@ -113,12 +113,12 @@
 		cursor: pointer;
 	}
 
-	.interactive .muscle:not(.bodypart):hover {
+	.interactive .muscle:not(.bodypart):not(.active):hover {
 		fill: oklch(from var(--danger) l c h / 0.55);
 	}
 
 	.muscle.active {
 		fill: var(--danger);
-		filter: drop-shadow(0 0 3px oklch(from var(--danger) l c h / 0.70));
+		filter: drop-shadow(0 0 3px oklch(from var(--danger) l c h / 0.7));
 	}
 </style>

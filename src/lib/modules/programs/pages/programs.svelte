@@ -2,6 +2,7 @@
 	import { programsModel } from '../model';
 	import { goalLabels } from '$lib/shared/helpers/labels';
 	import { DifficultyBar } from '$lib/shared/components/difficulty-bar';
+	import { Loader } from '$lib/shared/components/loader';
 
 	const programs = programsModel.programs;
 	const programsError = programsModel.programsError;
@@ -25,7 +26,7 @@
 	{#if $programsError}
 		<p class="error-text">Не удалось загрузить программы. Проверь, что бэкенд запущен.</p>
 	{:else if $programsLoading && $programs.length === 0}
-		<p class="muted">Загружаю…</p>
+		<Loader text="Загружаю…" />
 	{:else}
 		<div class="list">
 			{#each $programs as program, i (program.id)}

@@ -7,6 +7,7 @@
 	import { formatDate, formatTargetReps } from '$lib/shared/helpers/labels';
 	import { Icon } from '$lib/shared/components/icon';
 	import { Button } from '$lib/shared/components/button';
+	import { Loader } from '$lib/shared/components/loader';
 
 	const user = authModel.user;
 	const allExercises = diaryModel.allExercises;
@@ -79,7 +80,7 @@
 	{#if $workoutError}
 		<p class="error-text">Тренировка не найдена.</p>
 	{:else if !$currentWorkoutLog}
-		<p class="muted">Загружаю…</p>
+		<Loader text="Загружаю…" />
 	{:else}
 		{@const log = $currentWorkoutLog}
 		<a href="/diary" class="back mono"><Icon name="chevron-left" size={0.9} /> Дневник</a>
@@ -158,7 +159,7 @@
 				<div class="group-head">
 					<h2>
 						{#if group.exercise}
-							<a href="/exercises/{group.exercise}">{group.name}</a>
+							<a href="/exercises/{group.exercise}?ref={page.url.pathname}">{group.name}</a>
 						{:else}
 							{group.name}
 						{/if}

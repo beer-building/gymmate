@@ -10,6 +10,21 @@
 	let { children } = $props();
 
 	const user = authModel.user;
+	let inputFocused = $state(false);
+
+	function onFocusIn(event: FocusEvent) {
+		const target = event.target as HTMLElement;
+		if (target.matches('input, textarea, select, [contenteditable]')) {
+			inputFocused = true;
+		}
+	}
+	function onFocusOut(event: FocusEvent) {
+		const target = event.target as HTMLElement;
+		if (target.matches('input, textarea, select, [contenteditable]')) {
+			inputFocused = false;
+			requestAnimationFrame(() => window.scrollTo(0, window.scrollY));
+		}
+	}
 
 	const navItems = [
 		{ href: '/exercises', label: 'Упражнения', icon: 'dumbbell' },
@@ -26,6 +41,8 @@
 <svelte:head>
 	<title>GymMate — тренировки в зале</title>
 </svelte:head>
+
+<svelte:window onfocusin={onFocusIn} onfocusout={onFocusOut} />
 
 {#snippet navLinks()}
 	{#each navItems as item (item.href)}
@@ -64,7 +81,7 @@
 
 <!-- мобильный нижний таб-бар: вне header, т.к. backdrop-filter на нём
      делает header containing block'ом для position: fixed -->
-<nav class="tab-bar" aria-label="Основные разделы">
+<nav class="tab-bar {inputFocused ? 'hidden' : ''}" aria-label="Основные разделы">
 	{@render navLinks()}
 	<a href="/profile" class:current={page.url.pathname.startsWith('/profile')}>
 		{#if $user}
@@ -274,6 +291,12 @@
 			border-top: 1px solid var(--line);
 			padding: 0.375rem 0.5rem 0;
 			padding-bottom: max(var(--safe-area-bottom), 0.375rem);
+			transition: opacity 0.15s ease;
+		}
+
+		.tab-bar.hidden {
+			opacity: 0;
+			pointer-events: none;
 		}
 
 		.tab-bar a {

@@ -196,6 +196,31 @@ export const archiveUserProgramFx = createEffect((id: string) =>
 sample({ clock: programArchiveRequested, target: archiveUserProgramFx });
 sample({ clock: archiveUserProgramFx.done, target: loadMyProgramsFx });
 
+// --- план тренировки (список упражнений без лога) ---
+
+export const workoutPlanPageOpened = createEvent<string>();
+
+export const loadWorkoutPlanFx = createEffect(async (id: string) => {
+	const workout = await api.getUserProgramWorkout(id);
+	const exercises = await api.getUserProgramWorkoutExercises([id]);
+	return { workout, exercises };
+});
+
+export const currentWorkoutPlan = createStore<UserProgramWorkout | null>(null)
+	.on(loadWorkoutPlanFx.doneData, (_, { workout }) => workout)
+	.reset(workoutPlanPageOpened);
+
+export const workoutPlanExercises = createStore<UserProgramWorkoutExercise[]>([])
+	.on(loadWorkoutPlanFx.doneData, (_, { exercises }) => exercises)
+	.reset(workoutPlanPageOpened);
+
+export const workoutPlanLoading = loadWorkoutPlanFx.pending;
+export const workoutPlanError = createStore(false)
+	.on(loadWorkoutPlanFx.fail, () => true)
+	.reset(workoutPlanPageOpened);
+
+sample({ clock: workoutPlanPageOpened, target: loadWorkoutPlanFx });
+
 // --- страница тренировки: упражнения, подходы и план из форка ---
 
 export const workoutPageOpened = createEvent<string>();

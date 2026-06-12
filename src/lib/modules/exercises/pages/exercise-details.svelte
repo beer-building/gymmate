@@ -4,6 +4,7 @@
 	import { authModel } from '$lib/modules/auth/model';
 	import { MuscleMap } from '../components/muscle-map';
 	import { Icon } from '$lib/shared/components/icon';
+	import { Loader } from '$lib/shared/components/loader';
 	import { RichText } from '$lib/shared/components/rich-text';
 	import { muscleGroupLabels, equipmentLabels, difficultyLabels } from '$lib/shared/helpers/labels';
 
@@ -15,6 +16,8 @@
 		exercisesModel.exercisePageOpened(page.params.id!);
 	});
 
+	const backRef = $derived(page.url.searchParams.get('ref'));
+
 	function youtubeEmbed(url: string): string | null {
 		const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{6,})/);
 		return match ? `https://www.youtube.com/embed/${match[1]}` : null;
@@ -25,12 +28,18 @@
 	{#if $exerciseError}
 		<p class="error-text">Упражнение не найдено.</p>
 	{:else if !$currentExercise}
-		<p class="muted">Загружаю…</p>
+		<Loader text="Загружаю…" />
 	{:else}
 		{@const item = $currentExercise}
-		<a href="/exercises" class="back mono"
-			><Icon name="chevron-left" size={0.9} /> Все упражнения</a
-		>
+		{#if backRef}
+			<a href={backRef} class="back mono"
+				><Icon name="chevron-left" size={0.9} /> Назад</a
+			>
+		{:else}
+			<a href="/exercises" class="back mono"
+				><Icon name="chevron-left" size={0.9} /> Все упражнения</a
+			>
+		{/if}
 
 		<header class="rise">
 			<div class="head-text">

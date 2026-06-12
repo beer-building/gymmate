@@ -7,6 +7,7 @@
 	import { formatTargetReps } from '$lib/shared/helpers/labels';
 	import { Icon } from '$lib/shared/components/icon';
 	import { Button } from '$lib/shared/components/button';
+	import { Loader } from '$lib/shared/components/loader';
 	import { DifficultyBar } from '$lib/shared/components/difficulty-bar';
 
 	const programDetails = programsModel.programDetails;
@@ -44,7 +45,7 @@
 	{#if $programError}
 		<p class="error-text">Программа не найдена.</p>
 	{:else if !$programDetails}
-		<p class="muted">Загружаю…</p>
+		<Loader text="Загружаю…" />
 	{:else}
 		{@const { program, workouts, exercisesByWorkout } = $programDetails}
 		<a href="/programs" class="back mono"><Icon name="chevron-left" size={0.9} /> Все программы</a>
@@ -86,7 +87,7 @@
 						{#each exercisesByWorkout[workout.id] ?? [] as item (item.id)}
 							<tr>
 								<td>
-									<a href="/exercises/{item.exercise}" class="exercise-link">
+									<a href="/exercises/{item.exercise}?ref={page.url.pathname}" class="exercise-link">
 										{item.expand?.exercise?.name ?? '—'}
 									</a>
 								</td>

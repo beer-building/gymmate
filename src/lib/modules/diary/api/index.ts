@@ -43,6 +43,10 @@ export async function deleteUserProgram(id: string): Promise<void> {
 	await pb.collection('user_programs').delete(id, noCancel);
 }
 
+export async function getUserProgramWorkout(id: string): Promise<UserProgramWorkout> {
+	return pb.collection('user_program_workouts').getOne<UserProgramWorkout>(id);
+}
+
 export async function getUserProgramWorkouts(userProgramId: string): Promise<UserProgramWorkout[]> {
 	return pb.collection('user_program_workouts').getFullList<UserProgramWorkout>({
 		filter: pb.filter('user_program = {:id}', { id: userProgramId }),

@@ -7,10 +7,12 @@
 	import { Icon } from '$lib/shared/components/icon';
 	import { Button } from '$lib/shared/components/button';
 	import { DifficultyBar } from '$lib/shared/components/difficulty-bar';
+	import { Loader } from '$lib/shared/components/loader';
 	import type { UserProgram, UserProgramWorkout } from '$lib/shared/types';
 
 	const user = authModel.user;
 	const myPrograms = diaryModel.myPrograms;
+	const myProgramsLoading = diaryModel.myProgramsLoading;
 	const workoutLogs = diaryModel.workoutLogs;
 	const workoutLogsLoading = diaryModel.workoutLogsLoading;
 
@@ -119,7 +121,11 @@
 	/>
 
 	{#if tab === 'programs'}
-		{#if $myPrograms.length === 0}
+		{#if $myProgramsLoading}
+			<div class="loader-wrap rise">
+				<Loader animationDirection="vertical" />
+			</div>
+		{:else if $myPrograms.length === 0}
 			<div class="plate empty rise">
 				<p class="mono">Пока пусто</p>
 				<p class="muted">
@@ -133,7 +139,7 @@
 				<div class="plate program rise" style="animation-delay: {i * 0.06}s">
 					<div class="program-head">
 						<div class="program-title">
-							<h3><a href="/diary/programs/{program.id}">{program.name}</a></h3>
+							<h3>{program.name}</h3>
 							{#if program.difficulty}
 								<DifficultyBar level={program.difficulty} />
 							{/if}
@@ -153,7 +159,7 @@
 						{#each workouts as workout (workout.id)}
 							<li>
 								<span class="mono num">{String(workout.order_index).padStart(2, '0')}</span>
-								<span class="name">{workout.name}</span>
+								<a href="/diary/workouts/{workout.id}" class="name">{workout.name}</a>
 								<Button
 									size="sm"
 									onclick={() => startWorkout(program, workout)}
@@ -168,7 +174,7 @@
 			{/each}
 		{/if}
 	{:else if $workoutLogsLoading && $workoutLogs.length === 0}
-		<p class="muted">Загружаю…</p>
+		<Loader text="Загружаю…" />
 	{:else if $workoutLogs.length === 0}
 		<div class="plate empty rise">
 			<p class="mono">Пока пусто</p>
@@ -332,6 +338,12 @@
 		flex: 1;
 		min-width: 0;
 		overflow-wrap: anywhere;
+		text-decoration: none;
+		color: inherit;
+	}
+
+	.program-workouts .name:hover {
+		color: var(--volt);
 	}
 
 	.empty {

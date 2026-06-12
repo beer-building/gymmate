@@ -4,6 +4,7 @@
 	import { MuscleMap } from '../components/muscle-map';
 	import { Tabs } from '$lib/shared/components/tabs';
 	import { Icon } from '$lib/shared/components/icon';
+	import { Loader } from '$lib/shared/components/loader';
 	import { muscleGroupLabels, equipmentLabels, difficultyLabels } from '$lib/shared/helpers/labels';
 	import type { MuscleGroup } from '$lib/shared/types';
 
@@ -116,7 +117,7 @@
 	{#if $exercisesError}
 		<p class="error-text">Не удалось загрузить упражнения. Проверь, что бэкенд запущен.</p>
 	{:else if $exercisesLoading && $filteredExercises.length === 0}
-		<p class="muted">Загружаю…</p>
+		<Loader text="Загружаю…" />
 	{:else}
 		<div class="meta-row mono">
 			<span>Найдено: <b>{$filteredExercises.length}</b></span>

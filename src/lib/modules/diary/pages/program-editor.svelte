@@ -8,6 +8,7 @@
 	import { Input } from '$lib/shared/components/input';
 	import { Icon } from '$lib/shared/components/icon';
 	import { Button } from '$lib/shared/components/button';
+	import { Loader } from '$lib/shared/components/loader';
 	import type { UserProgramWorkoutExercise } from '$lib/shared/types';
 
 	const user = authModel.user;
@@ -71,6 +72,11 @@
 		userProgramModel.exerciseChanged({ id, data: { [field]: value } });
 	}
 
+	function changeNotes(id: string, event: Event) {
+		const value = (event.currentTarget as HTMLTextAreaElement).value.trim();
+		userProgramModel.exerciseChanged({ id, data: { notes: value } });
+	}
+
 	function exportProgram() {
 		if (!$editorProgram) return;
 		downloadProgramFile(serializeProgram($editorProgram, $editorWorkouts, $editorExercises));
@@ -88,7 +94,7 @@
 	{#if $editorError}
 		<p class="error-text">Программа не найдена.</p>
 	{:else if !$editorProgram}
-		<p class="muted">Загружаю…</p>
+		<Loader text="Загружаю…" />
 	{:else}
 		<a href="/diary" class="back mono"><Icon name="chevron-left" size={0.9} /> Дневник</a>
 
@@ -132,7 +138,7 @@
 						{#each exercisesByWorkout[workout.id] ?? [] as item (item.id)}
 							<li class="exercise">
 								<div class="exercise-name">
-									<a href="/exercises/{item.exercise}" class="exercise-link">
+									<a href="/exercises/{item.exercise}?ref={page.url.pathname}" class="exercise-link">
 										{item.expand?.exercise?.name ?? '—'}
 									</a>
 								</div>
@@ -152,6 +158,15 @@
 										</label>
 									{/each}
 								</div>
+								{#if item.notes || item.id}
+									<textarea
+										class="notes-input"
+										rows="2"
+										placeholder="Заметки к упражнению…"
+										onblur={(event) => changeNotes(item.id, event)}
+									>{item.notes}</textarea
+									>
+								{/if}
 								<Button
 									kind="icon"
 									class="remove"
@@ -256,7 +271,9 @@
 	.exercise {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto auto;
-		grid-template-areas: 'name fields remove';
+		grid-template-areas:
+			'name fields remove'
+			'notes notes notes';
 		align-items: center;
 		gap: 8px 14px;
 		padding-block: 10px;
@@ -286,6 +303,19 @@
 
 	.exercise :global(.remove) {
 		grid-area: remove;
+	}
+
+	.notes-input {
+		grid-area: notes;
+		font: inherit;
+		font-size: 13px;
+		background: var(--bg-sunken);
+		border: 1px solid var(--line);
+		border-radius: var(--border-radius);
+		padding: 8px 10px;
+		resize: vertical;
+		width: 100%;
+		box-sizing: border-box;
 	}
 
 	/* у каждого инпута — своя подпись, что именно редактируется */
@@ -325,7 +355,8 @@
 			grid-template-columns: minmax(0, 1fr) auto;
 			grid-template-areas:
 				'name remove'
-				'fields fields';
+				'fields fields'
+				'notes notes';
 		}
 
 		.exercise-fields {
