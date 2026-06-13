@@ -429,7 +429,29 @@ export interface RestTimer {
 	totalSeconds: number;
 }
 
-export const restTimer = createStore<RestTimer | null>(null)
+// таймер переживает навигацию и перезагрузку: храним в localStorage и
+// восстанавливаем при старте приложения, если он ещё не истёк
+const REST_TIMER_KEY = 'gymmate:rest-timer';
+
+function loadPersistedRest(): RestTimer | null {
+	if (typeof localStorage === 'undefined') return null;
+	try {
+		const raw = localStorage.getItem(REST_TIMER_KEY);
+		if (!raw) return null;
+		const parsed = JSON.parse(raw) as RestTimer;
+		if (parsed && typeof parsed.endsAt === 'number' && parsed.endsAt > Date.now()) {
+			return parsed;
+		}
+		localStorage.removeItem(REST_TIMER_KEY);
+	} catch {
+		/* битое значение — игнорируем */
+	}
+	return null;
+}
+
+// reset на workoutPageOpened убран намеренно: таймер глобальный и не должен
+// гаснуть при переходе на другую страницу или возврате в тренировку
+export const restTimer = createStore<RestTimer | null>(loadPersistedRest())
 	.on(restStarted, (_, seconds) => ({
 		endsAt: Date.now() + seconds * 1000,
 		totalSeconds: seconds
@@ -439,8 +461,13 @@ export const restTimer = createStore<RestTimer | null>(null)
 			? { endsAt: timer.endsAt + seconds * 1000, totalSeconds: timer.totalSeconds + seconds }
 			: timer
 	)
-	.reset(restStopped)
-	.reset(workoutPageOpened);
+	.reset(restStopped);
+
+restTimer.watch((timer) => {
+	if (typeof localStorage === 'undefined') return;
+	if (timer) localStorage.setItem(REST_TIMER_KEY, JSON.stringify(timer));
+	else localStorage.removeItem(REST_TIMER_KEY);
+});
 
 // после записанного подхода отдых стартует сам; длительность — из плана
 // упражнения, если оно там есть. На завершённой тренировке (правка задним

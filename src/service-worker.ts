@@ -30,6 +30,23 @@ sw.addEventListener('activate', (event) => {
 	);
 });
 
+// Тап по уведомлению об окончании отдыха — фокусируем открытое окно приложения
+// (или открываем дневник), чтобы вернуться к тренировке в один тап
+sw.addEventListener('notificationclick', (event) => {
+	event.notification.close();
+	event.waitUntil(
+		(async () => {
+			const clients = await sw.clients.matchAll({ type: 'window', includeUncontrolled: true });
+			const existing = clients.find((client) => client.url.includes('/diary')) ?? clients[0];
+			if (existing) {
+				await existing.focus();
+			} else {
+				await sw.clients.openWindow('/diary');
+			}
+		})()
+	);
+});
+
 sw.addEventListener('fetch', (event) => {
 	if (event.request.method !== 'GET') return;
 

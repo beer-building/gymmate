@@ -2,12 +2,21 @@
 	import { diaryModel } from '../../model';
 	import { Button } from '$lib/shared/components/button';
 	import { Icon } from '$lib/shared/components/icon';
+	import {
+		notificationPermission,
+		requestNotifications,
+		scheduleRestEnd,
+		cancelRestEnd,
+		notifyRestEndNow
+	} from '../../helpers/rest-notify';
 
 	const restTimer = diaryModel.restTimer;
 
 	let now = $state(Date.now());
 	let finished = $state(false);
 	let audioCtx: AudioContext | null = null;
+	// показываем «колокольчик», пока разрешение не запрошено
+	let permission = $state(notificationPermission());
 
 	$effect(() => {
 		const timer = $restTimer;
@@ -21,6 +30,13 @@
 		} catch {
 			audioCtx = null;
 		}
+
+		// системное уведомление на конец отдыха — сработает и при свёрнутом
+		// приложении (где поддержан Notification Triggers). triggered=true —
+		// ОС покажет сама, in-page дублировать не нужно.
+		let triggered = false;
+		void scheduleRestEnd(timer.endsAt).then((ok) => (triggered = ok));
+
 		now = Date.now();
 		const interval = setInterval(() => {
 			now = Date.now();
@@ -28,12 +44,25 @@
 				finished = true;
 				beep();
 				navigator.vibrate?.([200, 120, 200]);
+				// если вкладка свёрнута и ОС-уведомление не запланировано — покажем сейчас
+				if (document.hidden && !triggered) void notifyRestEndNow();
 				// плашка гаснет сама; restStopped при уже пустом сторе безвреден
 				setTimeout(() => diaryModel.restStopped(), 5000);
 			}
 		}, 250);
-		return () => clearInterval(interval);
+		return () => {
+			clearInterval(interval);
+			void cancelRestEnd();
+		};
 	});
+
+	async function enableNotifications() {
+		permission = await requestNotifications();
+		// разрешили во время идущего отдыха — сразу планируем на текущий таймер
+		if (permission === 'granted' && $restTimer && !finished) {
+			void scheduleRestEnd($restTimer.endsAt);
+		}
+	}
 
 	const remaining = $derived(
 		$restTimer ? Math.max(0, Math.ceil(($restTimer.endsAt - now) / 1000)) : 0
@@ -82,6 +111,23 @@
 			<span class="mono label">{finished ? '// отдых окончен' : '// отдых'}</span>
 			<span class="mono time">{finished ? 'ПОГНАЛИ' : formatTime(remaining)}</span>
 			<div class="controls">
+				{#if !finished && permission === 'default'}
+					<!-- разовый запрос разрешения: уведомить, когда отдых кончится в фоне.
+				     иконка инлайн — не через динамический import Icon -->
+					<Button
+						kind="icon"
+						class="notify-toggle"
+						onclick={enableNotifications}
+						title="Уведомлять, когда отдых кончится"
+						aria-label="Включить уведомления об окончании отдыха"
+					>
+						<svg class="bell-glyph" viewBox="0 0 24 24" aria-hidden="true">
+							<path
+								d="M12 2.25A6.75 6.75 0 0 0 5.25 9v.75a8.217 8.217 0 0 1-2.119 5.52.75.75 0 0 0 .298 1.206c1.544.57 3.16.99 4.831 1.243a3.75 3.75 0 1 0 7.48 0 24.583 24.583 0 0 0 4.83-1.244.75.75 0 0 0 .298-1.205 8.217 8.217 0 0 1-2.118-5.52V9A6.75 6.75 0 0 0 12 2.25ZM9.75 18c0-.034 0-.067.002-.1a25.05 25.05 0 0 0 4.496 0l.002.1a2.25 2.25 0 1 1-4.5 0Z"
+							/>
+						</svg>
+					</Button>
+				{/if}
 				{#if !finished}
 					<button class="chip" onclick={() => diaryModel.restExtended(30)}>+30 сек</button>
 				{/if}
@@ -162,6 +208,17 @@
 		display: flex;
 		align-items: center;
 		gap: 8px;
+	}
+
+	/* колокольчик — действие, не удаление: volt вместо дефолтного danger у icon-кнопки */
+	.controls :global(.notify-toggle) {
+		--icon-color: var(--volt);
+	}
+
+	.bell-glyph {
+		width: 1.05rem;
+		height: 1.05rem;
+		fill: currentColor;
 	}
 
 	/* на мобильном — над таб-баром (его высота ~4.25rem, см. layout) */

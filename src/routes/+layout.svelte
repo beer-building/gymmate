@@ -6,6 +6,7 @@
 	import { Button } from '$lib/shared/components/button';
 	import { Icon } from '$lib/shared/components/icon';
 	import { Avatar } from '$lib/shared/components/avatar';
+	import { RestTimer } from '$lib/modules/diary/components/rest-timer';
 
 	let { children } = $props();
 
@@ -98,6 +99,10 @@
 <main>
 	{@render children()}
 </main>
+
+<!-- таймер отдыха — глобальный: переживает переход на другие страницы;
+     рендерится только когда отдых идёт (store сам null-гейтит) -->
+<RestTimer />
 
 <footer>
 	<div class="container">

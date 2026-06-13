@@ -4,7 +4,6 @@
 	import { diaryModel } from '../model';
 	import { authModel } from '$lib/modules/auth/model';
 	import { ExerciseSelect } from '$lib/modules/exercises/components/exercise-select';
-	import { RestTimer } from '../components/rest-timer';
 	import { formatDate, formatSetsReps, plural } from '$lib/shared/helpers/labels';
 	import { Icon } from '$lib/shared/components/icon';
 	import { Button } from '$lib/shared/components/button';
@@ -310,6 +309,10 @@
 								<Button kind="ghost" size="sm" onclick={() => quickAdd(item.exercise)}>
 									Выбрать
 								</Button>
+								{#if item.notes}
+									<!-- заметка к упражнению из программы: техника, на что смотреть -->
+									<p class="plan-note muted">{item.notes}</p>
+								{/if}
 							</li>
 						{/each}
 					</ul>
@@ -405,8 +408,6 @@
 		</section>
 	{/if}
 </div>
-
-<RestTimer />
 
 <style>
 	.narrow {
@@ -574,6 +575,15 @@
 
 	.plan-name {
 		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+
+	/* заметка к упражнению — отдельной строкой под названием, во всю ширину */
+	.plan-note {
+		grid-column: 1 / -1;
+		margin: 2px 0 0;
+		font-size: 13px;
+		line-height: 1.45;
 		overflow-wrap: anywhere;
 	}
 
