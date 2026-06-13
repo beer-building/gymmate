@@ -2,7 +2,7 @@ import { pb } from '$lib/shared/api';
 import type { Program, ProgramWorkout, ProgramWorkoutExercise } from '$lib/shared/types';
 
 export async function getPrograms(): Promise<Program[]> {
-	return pb.collection('programs').getFullList<Program>({ sort: 'created' });
+	return pb.collection('programs').getFullList<Program>({ sort: '-created' });
 }
 
 export async function getProgram(id: string): Promise<Program> {
