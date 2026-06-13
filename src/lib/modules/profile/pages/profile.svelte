@@ -149,7 +149,7 @@
 						<p class="muted mono">{$user.email}</p>
 						{#if $user.avatar}
 							<button
-								class="avatar-remove"
+								class="avatar-remove hit-target"
 								type="button"
 								onclick={removeAvatar}
 								disabled={avatarBusy}

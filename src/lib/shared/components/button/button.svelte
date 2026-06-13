@@ -110,7 +110,9 @@
 		font-size: 0.8125rem;
 	}
 
-	/* цвет переопределяется снаружи через --icon-color (по умолчанию — удаление) */
+	/* приглушённая в покое, danger на hover/focus — удаление не должно быть
+	   самым ярким пятном экрана (несколько trash на карточку). Цвет действия
+	   переопределяется снаружи через --icon-color */
 	.btn.icon {
 		width: 2rem;
 		height: 2rem;
@@ -118,13 +120,14 @@
 		background: transparent;
 		border: none;
 		border-radius: var(--radius-sm);
-		color: var(--icon-color, var(--danger));
+		color: var(--icon-color, var(--muted));
 		letter-spacing: 0;
 		text-transform: none;
 		flex-shrink: 0;
 	}
 
-	.btn.icon:hover {
+	.btn.icon:hover,
+	.btn.icon:focus-visible {
 		background: oklch(from var(--icon-color, var(--danger)) l c h / 0.14);
 		color: var(--icon-color, var(--danger));
 	}
@@ -146,5 +149,22 @@
 	.btn.icon-filled:hover {
 		background: oklch(from var(--icon-color, var(--ink)) l c h / 0.2);
 		color: var(--icon-color, var(--ink));
+	}
+
+	/* touch: зона нажатия ≥44px без роста визуала (sm и icon-кнопки меньше 44px) */
+	@media (pointer: coarse) {
+		.btn {
+			position: relative;
+		}
+
+		.btn::after {
+			content: '';
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			width: max(100%, 2.75rem);
+			height: max(100%, 2.75rem);
+			transform: translate(-50%, -50%);
+		}
 	}
 </style>

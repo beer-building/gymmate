@@ -47,6 +47,13 @@
 		background-position: right 0.625rem center;
 	}
 
+	/* touch: sm-селекты ниже 44px — добиваем высоту, как у инпутов */
+	@media (pointer: coarse) {
+		.boxed.sm {
+			min-height: 2.75rem;
+		}
+	}
+
 	.boxed.md {
 		padding: 0.6875rem 2.25rem 0.6875rem 0.875rem;
 		font-size: 0.9375rem;
@@ -96,5 +103,12 @@
 		font-weight: 800;
 		letter-spacing: -0.01em;
 		padding-block: 0.375rem;
+	}
+
+	/* стрелка зашита в data-URI и не умеет var(): в светлой теме — свой цвет (muted) */
+	@media (prefers-color-scheme: light) {
+		.select {
+			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%236b6456' stroke-width='1.5'/%3E%3C/svg%3E");
+		}
 	}
 </style>

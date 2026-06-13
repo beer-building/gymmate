@@ -9,19 +9,23 @@
 	import { Button } from '$lib/shared/components/button';
 	import { DifficultyBar } from '$lib/shared/components/difficulty-bar';
 	import { Loader } from '$lib/shared/components/loader';
-	import type { UserProgram, UserProgramWorkout } from '$lib/shared/types';
+	import type { UserProgramWorkout } from '$lib/shared/types';
 
 	const user = authModel.user;
 	const myPrograms = diaryModel.myPrograms;
 	const myProgramsLoading = diaryModel.myProgramsLoading;
 	const workoutLogs = diaryModel.workoutLogs;
 	const workoutLogsLoading = diaryModel.workoutLogsLoading;
+	const workoutLogsError = diaryModel.workoutLogsError;
+	const myProgramsError = diaryModel.myProgramsError;
+	const activeWorkoutLog = diaryModel.activeWorkoutLog;
 
 	let creating = $state(false);
 	let importing = $state(false);
 	let starting = $state<string | null>(null);
 	let tab = $state<'programs' | 'history'>('programs');
 	let importInput: HTMLInputElement | null = null;
+	let actionError = $state('');
 
 	$effect(() => {
 		if (!$user) {
@@ -33,9 +37,13 @@
 
 	async function createProgram() {
 		creating = true;
+		actionError = '';
 		try {
 			const program = await diaryModel.createOwnProgramFx();
 			goto(`/diary/programs/${program.id}`);
+		} catch {
+			// молчаливый фейл хуже ошибки: раньше кнопка просто «отщёлкивала»
+			actionError = 'Не удалось создать программу — проверь соединение и попробуй ещё раз.';
 		} finally {
 			creating = false;
 		}
@@ -60,19 +68,20 @@
 		}
 	}
 
-	function remove(id: string, event: Event) {
-		event.preventDefault();
-		event.stopPropagation();
+	function remove(id: string) {
 		if (confirm('Удалить тренировку вместе со всеми подходами?')) {
 			diaryModel.workoutLogDeleteRequested(id);
 		}
 	}
 
-	async function startWorkout(program: UserProgram, workout: UserProgramWorkout) {
+	async function startWorkout(workout: UserProgramWorkout) {
 		starting = workout.id;
+		actionError = '';
 		try {
-			const log = await diaryModel.startUserWorkoutFx({ program, workout });
+			const log = await diaryModel.startUserWorkoutFx(workout);
 			goto(`/diary/${log.id}`);
+		} catch {
+			actionError = 'Не удалось начать тренировку — проверь соединение и попробуй ещё раз.';
 		} finally {
 			starting = null;
 		}
@@ -94,6 +103,18 @@
 		} catch {
 			alert('Не удалось скопировать в буфер обмена.');
 		}
+	}
+
+	// подсказка про LLM-промпт — разовая: скрываем по крестику и запоминаем выбор.
+	// typeof-гард — чтобы не лезть в localStorage при пререндере (в Node его нет)
+	const PROMPT_HINT_KEY = 'gymmate:diary-prompt-hint-dismissed';
+	let promptHintDismissed = $state(
+		typeof localStorage !== 'undefined' && localStorage.getItem(PROMPT_HINT_KEY) === '1'
+	);
+
+	function dismissPromptHint() {
+		promptHintDismissed = true;
+		localStorage.setItem(PROMPT_HINT_KEY, '1');
 	}
 </script>
 
@@ -125,12 +146,41 @@
 		/>
 	</header>
 
-	<div class="llm-notice rise">
-		<p>
-			Составить программу можно через ChatGPT, Claude и другие LLM — используй
-			<button class="link-btn" onclick={copyPrompt}>{copied ? 'Скопировано' : 'промпт'}</button>.
-		</p>
-	</div>
+	{#if actionError}
+		<p class="error-text action-error rise" role="alert">{actionError}</p>
+	{/if}
+
+	{#if !promptHintDismissed}
+		<div class="llm-notice rise">
+			<p>
+				Составить программу можно через ChatGPT, Claude и другие LLM — используй
+				<button class="link-btn hit-target" onclick={copyPrompt}
+					>{copied ? 'Скопировано' : 'промпт'}</button
+				>.
+			</p>
+			<button
+				class="llm-dismiss hit-target"
+				onclick={dismissPromptHint}
+				title="Скрыть подсказку"
+				aria-label="Скрыть подсказку"
+			>
+				<Icon name="close" size={0.85} />
+			</button>
+		</div>
+	{/if}
+
+	<!-- незавершённая тренировка всегда на виду: вернувшийся после прерывания
+	     продолжает её, а не создаёт дубликат через «Начать» -->
+	{#if $activeWorkoutLog}
+		<a href="/diary/{$activeWorkoutLog.id}" class="plate volt active-banner rise">
+			<span class="active-dot" aria-hidden="true"></span>
+			<span class="active-info">
+				<span class="mono active-label">// тренировка идёт</span>
+				<span class="active-name">{$activeWorkoutLog.name_snapshot || 'Тренировка'}</span>
+			</span>
+			<span class="mono active-cta">Продолжить</span>
+		</a>
+	{/if}
 
 	<Tabs
 		tabs={[
@@ -145,13 +195,23 @@
 			<div class="loader-wrap rise">
 				<Loader animationDirection="vertical" />
 			</div>
+		{:else if $myProgramsError}
+			<!-- фейл загрузки нельзя маскировать под «Пока пусто» -->
+			<div class="plate empty rise">
+				<p class="error-text">Не удалось загрузить программы — проверь соединение.</p>
+				<p class="muted">
+					<button class="link-btn hit-target" onclick={() => diaryModel.diaryPageOpened()}>
+						Попробовать ещё раз
+					</button>
+				</p>
+			</div>
 		{:else if $myPrograms.length === 0}
 			<div class="plate empty rise">
 				<p class="mono">Пока пусто</p>
 				<p class="muted">
 					Добавь <a href="/programs">готовую программу</a> или
-					<button class="link-btn" onclick={createProgram}>создай свою</button> — и начинай тренировки
-					по плану.
+					<button class="link-btn hit-target" onclick={createProgram}>создай свою</button> — и начинай
+					тренировки по плану.
 				</p>
 			</div>
 		{:else}
@@ -159,15 +219,15 @@
 				<div class="plate program rise" style="animation-delay: {i * 0.06}s">
 					<div class="program-head">
 						<div class="program-title">
-							<h3>{program.name}</h3>
+							<h2 class="program-name">{program.name}</h2>
 							{#if program.difficulty}
 								<DifficultyBar level={program.difficulty} />
 							{/if}
 						</div>
 						<div class="program-actions">
-							<a class="archive mono" href="/diary/programs/{program.id}">изменить</a>
+							<a class="archive mono hit-target" href="/diary/programs/{program.id}">изменить</a>
 							<button
-								class="archive mono"
+								class="archive mono hit-target"
 								onclick={() => archive(program.id)}
 								title="Убрать из дневника"
 							>
@@ -182,7 +242,7 @@
 								<a href="/diary/workouts/{workout.id}" class="name">{workout.name}</a>
 								<Button
 									size="sm"
-									onclick={() => startWorkout(program, workout)}
+									onclick={() => startWorkout(workout)}
 									disabled={starting === workout.id}
 								>
 									{starting === workout.id ? 'Создаю…' : 'Начать'}
@@ -195,6 +255,15 @@
 		{/if}
 	{:else if $workoutLogsLoading && $workoutLogs.length === 0}
 		<Loader text="Загружаю…" />
+	{:else if $workoutLogsError}
+		<div class="plate empty rise">
+			<p class="error-text">Не удалось загрузить историю — проверь соединение.</p>
+			<p class="muted">
+				<button class="link-btn hit-target" onclick={() => diaryModel.diaryPageOpened()}>
+					Попробовать ещё раз
+				</button>
+			</p>
+		</div>
 	{:else if $workoutLogs.length === 0}
 		<div class="plate empty rise">
 			<p class="mono">Пока пусто</p>
@@ -205,15 +274,13 @@
 	{:else}
 		<div class="list">
 			{#each $workoutLogs as log, i (log.id)}
-				<a
-					href="/diary/{log.id}"
-					class="plate row rise"
-					style="animation-delay: {Math.min(i * 0.05, 0.4)}s"
-				>
+				<!-- кнопка удаления не может жить внутри <a>: карточка — div,
+				     ссылка растянута оверлеем через .row-link::after -->
+				<div class="plate glow row rise" style="animation-delay: {Math.min(i * 0.05, 0.4)}s">
 					<div class="date mono">{formatDate(log.started_at)}</div>
 					<div class="body">
 						<h2>
-							{log.name_snapshot || 'Тренировка'}
+							<a href="/diary/{log.id}" class="row-link">{log.name_snapshot || 'Тренировка'}</a>
 							{#if !log.completed_at}
 								<span class="live mono">идёт</span>
 							{/if}
@@ -224,13 +291,14 @@
 					</div>
 					<Button
 						kind="icon"
-						onclick={(event: MouseEvent) => remove(log.id, event)}
+						class="row-delete"
+						onclick={() => remove(log.id)}
 						title="Удалить"
 						aria-label="Удалить"
 					>
 						<Icon name="trash" />
 					</Button>
-				</a>
+				</div>
 			{/each}
 		</div>
 	{/if}
@@ -262,9 +330,97 @@
 	}
 
 	.llm-notice {
+		display: flex;
+		align-items: flex-start;
+		gap: 10px;
 		margin-bottom: 24px;
 		font-size: 13px;
 		color: var(--muted);
+	}
+
+	.llm-notice p {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.llm-dismiss {
+		flex-shrink: 0;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 1.5rem;
+		height: 1.5rem;
+		padding: 0;
+		margin-top: -2px;
+		background: transparent;
+		border: none;
+		border-radius: var(--radius-sm);
+		color: var(--muted);
+		cursor: pointer;
+		transition:
+			color 0.15s ease,
+			background 0.15s ease;
+	}
+
+	.llm-dismiss:hover {
+		color: var(--ink);
+		background: oklch(from var(--ink) l c h / 0.06);
+	}
+
+	.action-error {
+		margin: 0 0 16px;
+	}
+
+	/* --- плашка незавершённой тренировки --- */
+
+	.active-banner {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		padding: 14px 18px;
+		margin-bottom: 14px;
+	}
+
+	.active-dot {
+		flex-shrink: 0;
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: var(--volt);
+		box-shadow: 0 0 8px oklch(from var(--volt) l c h / 0.6);
+	}
+
+	.active-info {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		min-width: 0;
+		flex: 1;
+	}
+
+	.active-label {
+		font-size: 10px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.18em;
+		color: var(--volt);
+	}
+
+	.active-name {
+		font-weight: 700;
+		font-size: 15px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.active-cta {
+		flex-shrink: 0;
+		font-size: 11px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		color: var(--volt);
 	}
 
 	.llm-notice p {
@@ -297,14 +453,10 @@
 		flex-shrink: 0;
 	}
 
-	.program-head h3 {
+	.program-head .program-name {
 		font-size: 17px;
 		min-width: 0;
 		overflow-wrap: anywhere;
-	}
-
-	.program-head h3 a:hover {
-		color: var(--volt);
 	}
 
 	.program-actions {
@@ -404,6 +556,23 @@
 		gap: 20px;
 		padding: 20px 22px;
 		align-items: center;
+	}
+
+	/* ссылка покрывает всю карточку; кликабельная зона — весь .row */
+	.row-link {
+		color: inherit;
+	}
+
+	.row-link::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+	}
+
+	/* кнопка удаления — поверх оверлея ссылки */
+	.row :global(.row-delete) {
+		position: relative;
+		z-index: 1;
 	}
 
 	.date {

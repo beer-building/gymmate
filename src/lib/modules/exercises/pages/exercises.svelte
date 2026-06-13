@@ -128,7 +128,7 @@
 				<span class="filter-tag">«{$searchQuery.trim()}»</span>
 			{/if}
 			{#if hasFilters}
-				<button class="reset" onclick={resetFilters}>сбросить</button>
+				<button class="reset hit-target" onclick={resetFilters}>сбросить</button>
 			{/if}
 		</div>
 

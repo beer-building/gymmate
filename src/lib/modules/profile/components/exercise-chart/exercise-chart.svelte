@@ -274,10 +274,12 @@
 		margin-bottom: 6px;
 	}
 
+	/* данные — mono («Правило табло» из DESIGN.md): разряды выравниваются при движении курсора */
 	.readout .value {
-		font-family: var(--font-display);
+		font-family: var(--font-mono);
 		font-size: 26px;
-		font-weight: 800;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
 		color: var(--ink);
 		line-height: 1.1;
 	}

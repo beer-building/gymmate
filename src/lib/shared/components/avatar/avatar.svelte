@@ -52,6 +52,7 @@
 	class="avatar avatar-{size}"
 	class:ring
 	style="--avatar-hue: {hue}"
+	role="img"
 	aria-label={displayName || 'avatar'}
 	title={displayName || undefined}
 >

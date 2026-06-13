@@ -71,7 +71,13 @@
 
 {#if $restTimer}
 	<div class="rest plate" class:finished role="timer" aria-live="polite">
-		<div class="bar" style="width: {progress * 100}%" aria-hidden="true"></div>
+		<!-- transform вместо width: composited-анимация, layout не трогается;
+		     уезжающий влево край прячет overflow: hidden родителя -->
+		<div
+			class="bar"
+			style="transform: translateX({(progress - 1) * 100}%)"
+			aria-hidden="true"
+		></div>
 		<div class="content">
 			<span class="mono label">{finished ? '// отдых окончен' : '// отдых'}</span>
 			<span class="mono time">{finished ? 'ПОГНАЛИ' : formatTime(remaining)}</span>
@@ -117,12 +123,10 @@
 
 	.bar {
 		position: absolute;
-		left: 0;
-		top: 0;
-		bottom: 0;
+		inset: 0;
 		background: oklch(from var(--volt) l c h / 0.12);
 		border-right: 2px solid oklch(from var(--volt) l c h / 0.5);
-		transition: width 0.25s linear;
+		transition: transform 0.25s linear;
 		pointer-events: none;
 	}
 

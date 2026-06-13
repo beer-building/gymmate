@@ -1,3 +1,15 @@
+/* шрифты self-hosted (fontsource): работают офлайн в PWA и не блокируют рендер
+   внешним CSS; браузер качает только нужные subset'ы (latin + cyrillic) */
+@import '@fontsource/unbounded/800.css';
+@import '@fontsource/unbounded/900.css';
+@import '@fontsource/manrope/400.css';
+@import '@fontsource/manrope/500.css';
+@import '@fontsource/manrope/600.css';
+@import '@fontsource/manrope/700.css';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/600.css';
+@import '@fontsource/jetbrains-mono/700.css';
+
 :root {
 	color-scheme: dark;
 
@@ -155,11 +167,14 @@
 		--line: #dcd5c6;
 		--line-strong: #bdb29c;
 		--ink: #1b1710;
-		--muted: #746d5f;
-		/* акцент светлой темы — сочный апельсиновый; работает как текст/бордер
-		   на светлом фоне и как фон кнопок со светлым текстом поверх */
-		--volt: #ea580c;
-		--volt-dim: #c2410c;
+		/* ≥4.5:1 на всех трёх поверхностях, включая bg-sunken (плейсхолдеры, подписи в .set) */
+		--muted: #6b6456;
+		/* акцент светлой темы — жжёный апельсиновый; работает как текст/бордер
+		   на светлом фоне и как фон кнопок со светлым текстом поверх.
+		   Значение подобрано под контраст ≥4.5:1 на bg/raised/sunken — volt
+		   используется как цвет текста мелким кеглем по всему приложению */
+		--volt: #b33d0b;
+		--volt-dim: #9a3412;
 		--danger: #c81e1e;
 	}
 }
@@ -195,6 +210,19 @@ body::before {
 *::before {
 	box-sizing: border-box;
 	-webkit-tap-highlight-color: transparent;
+}
+
+/* плейсхолдеры наследуют muted без прозрачности: 0.7 opacity роняла
+   контраст ниже 4.5:1 в обеих темах */
+::placeholder {
+	color: var(--muted);
+	opacity: 1;
+}
+
+/* единый клавиатурный фокус; у полей ввода свой индикатор — volt-бордер */
+:focus-visible {
+	outline: 2px solid var(--volt);
+	outline-offset: 2px;
 }
 
 button,
@@ -302,6 +330,15 @@ a.plate:hover::before,
 	opacity: 1;
 }
 
+/* «заряженная» плита — акцент ключевого блока страницы:
+   volt-рамка + мягкая заливка из угла вместо side-stripe */
+.plate.volt {
+	border-color: oklch(from var(--volt) l c h / 0.45);
+	background:
+		radial-gradient(120% 140% at 0% 0%, oklch(from var(--volt) l c h / 0.07), transparent 55%),
+		var(--bg-raised);
+}
+
 .chip {
 	display: inline-flex;
 	align-items: center;
@@ -340,6 +377,27 @@ a.plate:hover::before,
 }
 
 /* стили кнопок живут в shared/components/button */
+
+/* тач-зоны: на touch-устройствах зона нажатия мелких контролов добивается
+   до ≥44px невидимым псевдоэлементом — визуальный размер не растёт.
+   .hit-target — утилита для текстовых кнопок и back-ссылок */
+@media (pointer: coarse) {
+	.chip,
+	.hit-target {
+		position: relative;
+	}
+
+	.chip::after,
+	.hit-target::after {
+		content: '';
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		width: max(100%, 2.75rem);
+		height: max(100%, 2.75rem);
+		transform: translate(-50%, -50%);
+	}
+}
 
 .field {
 	display: flex;
@@ -395,4 +453,18 @@ a.plate:hover::before,
 
 .rise {
 	animation: rise var(--spring-transition) both;
+}
+
+/* reduced motion: всё мгновенно — контент виден сразу (rise завершается,
+   пульс не мигает, пружины не пружинят) */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-delay: 0s !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
 }

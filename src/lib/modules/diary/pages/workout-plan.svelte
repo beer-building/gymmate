@@ -3,9 +3,10 @@
 	import { goto } from '$app/navigation';
 	import { diaryModel } from '../model';
 	import { authModel } from '$lib/modules/auth/model';
-	import { formatTargetReps } from '$lib/shared/helpers/labels';
+	import { formatTargetReps, plural } from '$lib/shared/helpers/labels';
 	import { Loader } from '$lib/shared/components/loader';
 	import { Icon } from '$lib/shared/components/icon';
+	import { Button } from '$lib/shared/components/button';
 
 	const user = authModel.user;
 
@@ -22,10 +23,22 @@
 	const loading = diaryModel.workoutPlanLoading;
 	const error = diaryModel.workoutPlanError;
 
-	function plural(n: number): string {
-		if (n % 10 === 1 && n % 100 !== 11) return `${n} упражнение`;
-		if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) return `${n} упражнения`;
-		return `${n} упражнений`;
+	let starting = $state(false);
+	let startError = $state('');
+
+	// страница плана не должна быть тупиком: отсюда тренировку можно начать
+	async function start() {
+		if (!$workout) return;
+		starting = true;
+		startError = '';
+		try {
+			const log = await diaryModel.startUserWorkoutFx($workout);
+			goto(`/diary/${log.id}`);
+		} catch {
+			startError = 'Не удалось начать тренировку — проверь соединение и попробуй ещё раз.';
+		} finally {
+			starting = false;
+		}
 	}
 </script>
 
@@ -35,21 +48,32 @@
 	{:else if !$workout && $loading}
 		<Loader text="Загружаю…" />
 	{:else if $workout}
-		<a href="/diary" class="back mono"><Icon name="chevron-left" size={0.9} /> Дневник</a>
+		<a href="/diary" class="back mono hit-target"><Icon name="chevron-left" size={0.9} /> Дневник</a
+		>
 
 		<header class="rise">
 			<h1>{$workout.name}</h1>
 			<p class="mono muted count">
 				{$exercises.length > 0
-					? plural($exercises.length)
+					? `${$exercises.length} ${plural($exercises.length, ['упражнение', 'упражнения', 'упражнений'])}`
 					: 'Упражнений пока нет'}
 			</p>
+			<div class="plan-actions">
+				<Button onclick={start} disabled={starting}>
+					{starting ? 'Создаю…' : 'Начать тренировку'}
+				</Button>
+				<Button kind="ghost" href="/diary/programs/{$workout.user_program}">Изменить план</Button>
+			</div>
+			{#if startError}
+				<p class="error-text plan-error" role="alert">{startError}</p>
+			{/if}
 		</header>
 
 		{#if $exercises.length > 0}
 			<section class="plate block rise" style="animation-delay: 0.06s">
 				<ul class="exercises">
 					{#each $exercises as item (item.id)}
+						{@const reps = formatTargetReps(item)}
 						<li class="exercise">
 							<div class="exercise-head">
 								<span class="mono num">{String(item.order_index + 1).padStart(2, '0')}</span>
@@ -58,8 +82,13 @@
 								</a>
 							</div>
 							<div class="exercise-meta mono">
-								<span class="tag">{item.target_sets} подходов</span>
-								<span class="tag muted">{formatTargetReps(item)}</span>
+								<span class="tag"
+									>{item.target_sets}
+									{plural(item.target_sets, ['подход', 'подхода', 'подходов'])}</span
+								>
+								{#if reps !== '—'}
+									<span class="tag muted">{reps} повт.</span>
+								{/if}
 								{#if item.target_weight}
 									<span class="tag muted">{item.target_weight} кг</span>
 								{/if}
@@ -75,7 +104,6 @@
 				</ul>
 			</section>
 		{/if}
-
 	{/if}
 </div>
 
@@ -104,12 +132,23 @@
 
 	h1 {
 		font-size: clamp(26px, 4vw, 40px);
-		margin-block: 12px 18px;
+		margin-block: 12px 12px;
 		overflow-wrap: anywhere;
 	}
 
 	.count {
 		font-size: 12px;
+	}
+
+	.plan-actions {
+		display: flex;
+		gap: 10px;
+		flex-wrap: wrap;
+		margin-top: 18px;
+	}
+
+	.plan-error {
+		margin: 12px 0 0;
 	}
 
 	.block {

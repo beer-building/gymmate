@@ -8,10 +8,8 @@
 			name="viewport"
 			content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
 		/>-->
-		<meta
-			name="viewport"
-			content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
-		/>
+		<!-- без maximum-scale: блокировка зума нарушает WCAG 1.4.4 (iOS Safari её и так игнорирует) -->
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
 		<meta name="text-scale" content="scale" />
 
@@ -36,12 +34,7 @@
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 		<meta name="apple-mobile-web-app-title" content="GymMate" />
 
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link
-			href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap&subset=cyrillic"
-			rel="stylesheet"
-		/>
+		<!-- шрифты self-hosted через fontsource, подключены в app.css -->
 		%sveltekit.head%
 	</head>
 

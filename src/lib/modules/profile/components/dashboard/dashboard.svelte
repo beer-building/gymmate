@@ -6,7 +6,7 @@
 	import { ExerciseChart } from '../exercise-chart';
 	import { Button } from '$lib/shared/components/button';
 	import { Loader } from '$lib/shared/components/loader';
-	import { formatDate, formatTargetReps } from '$lib/shared/helpers/labels';
+	import { formatDate, formatSetsReps } from '$lib/shared/helpers/labels';
 
 	const dashboard = profileModel.dashboard;
 
@@ -17,10 +17,7 @@
 		if (!next) return;
 		starting = true;
 		try {
-			const log = await diaryModel.startUserWorkoutFx({
-				program: next.program,
-				workout: next.workout
-			});
+			const log = await diaryModel.startUserWorkoutFx(next.workout);
 			goto(`/diary/${log.id}`);
 		} finally {
 			starting = false;
@@ -34,7 +31,7 @@
 	{@const data = $dashboard}
 
 	{#if data.activeLog}
-		<section class="plate block next rise">
+		<section class="plate block volt rise">
 			<p class="eyebrow">// тренировка идёт</p>
 			<h2>{data.activeLog.name_snapshot || 'Тренировка'}</h2>
 			<p class="muted">Начата {formatDate(data.activeLog.started_at)} и ещё не завершена.</p>
@@ -43,7 +40,7 @@
 			</div>
 		</section>
 	{:else if data.next}
-		<section class="plate block next rise">
+		<section class="plate block volt rise">
 			<p class="eyebrow">// следующая тренировка · {data.next.program.name}</p>
 			<h2>{data.next.workout.name}</h2>
 			{#if data.next.exercises.length > 0}
@@ -51,7 +48,7 @@
 					{#each data.next.exercises.slice(0, 4) as item (item.id)}
 						<li>
 							<span class="preview-name">{item.expand?.exercise?.name}</span>
-							<span class="mono muted">{item.target_sets}×{formatTargetReps(item)}</span>
+							<span class="mono muted">{formatSetsReps(item)}</span>
 						</li>
 					{/each}
 					{#if data.next.exercises.length > 4}
@@ -135,9 +132,7 @@
 		margin-bottom: 14px;
 	}
 
-	.block.next {
-		border-left: 3px solid var(--volt);
-	}
+	/* акцент блока «следующая тренировка» — общий .plate.volt из app.css */
 
 	.block h2 {
 		font-size: clamp(20px, 3vw, 28px);

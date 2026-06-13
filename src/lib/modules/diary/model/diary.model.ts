@@ -33,6 +33,17 @@ export const workoutLogs = createStore<WorkoutLog[]>([]).on(
 
 export const workoutLogsLoading = loadWorkoutLogsFx.pending;
 
+// незавершённая тренировка — для плашки «продолжить» над табами дневника:
+// вернувшийся после прерывания пользователь должен увидеть её сразу
+export const activeWorkoutLog = workoutLogs.map(
+	(logs) => logs.find((log) => !log.completed_at) ?? null
+);
+
+// фейл загрузки не должен маскироваться под «Пока пусто»
+export const workoutLogsError = createStore(false)
+	.on(loadWorkoutLogsFx.fail, () => true)
+	.reset(loadWorkoutLogsFx.done);
+
 sample({ clock: diaryPageOpened, target: loadWorkoutLogsFx });
 
 // --- создание/удаление тренировки ---
@@ -75,6 +86,10 @@ export const myPrograms = createStore<MyProgram[]>([]).on(
 );
 
 export const myProgramsLoading = loadMyProgramsFx.pending;
+
+export const myProgramsError = createStore(false)
+	.on(loadMyProgramsFx.fail, () => true)
+	.reset(loadMyProgramsFx.done);
 
 sample({ clock: diaryPageOpened, target: loadMyProgramsFx });
 
@@ -174,17 +189,21 @@ export const importProgramFx = createEffect(async (file: File) => {
 
 sample({ clock: importProgramFx.done, target: loadMyProgramsFx });
 
-// старт тренировки из своей программы
-export const startUserWorkoutFx = createEffect(
-	({ program, workout }: { program: UserProgram; workout: UserProgramWorkout }) =>
-		api.createWorkoutLog({
-			user: authUserId(),
-			name_snapshot: workout.name,
-			started_at: new Date().toISOString(),
-			user_program: program.id,
-			user_program_workout: workout.id
-		})
-);
+// старт тренировки из своей программы; повторное «Начать» по той же
+// тренировке возвращает уже идущий лог вместо создания дубликата.
+// program.id избыточен — он же лежит в workout.user_program
+export const startUserWorkoutFx = createEffect(async (workout: UserProgramWorkout) => {
+	const logs = await api.getWorkoutLogs(authUserId());
+	const active = logs.find((log) => !log.completed_at && log.user_program_workout === workout.id);
+	if (active) return active;
+	return api.createWorkoutLog({
+		user: authUserId(),
+		name_snapshot: workout.name,
+		started_at: new Date().toISOString(),
+		user_program: workout.user_program,
+		user_program_workout: workout.id
+	});
+});
 
 // программа уходит в архив, история логов остаётся
 export const programArchiveRequested = createEvent<string>();
@@ -471,3 +490,71 @@ sample({
 	},
 	target: updateWorkoutLogFx
 });
+
+// завершённая тренировка не должна через минуту кричать «ПОГНАЛИ»
+restTimer.reset(workoutFinishRequested);
+
+// «раз-завершить»: случайный тап по «Завершить» не должен быть необратимым.
+// duration_seconds обнуляем — при повторном завершении пересчитается от started_at
+export const workoutResumeRequested = createEvent();
+
+sample({
+	clock: workoutResumeRequested,
+	source: currentWorkoutLog,
+	filter: (log) => log !== null && !!log.completed_at,
+	fn: (log) => ({ id: log!.id, data: { completed_at: '', duration_seconds: 0 } }),
+	target: updateWorkoutLogFx
+});
+
+// --- видимые ошибки записи ---
+
+// молчаливый фейл в зале означает «подход не записался, а я не узнал»:
+// каждый пишущий эффект страницы тренировки обязан показать ошибку
+export const workoutActionError = createStore<string | null>(null)
+	.on(addSetFx.fail, () => 'Подход не записался — проверь соединение и попробуй ещё раз.')
+	.on(deleteSetFx.fail, () => 'Не удалось удалить подход — попробуй ещё раз.')
+	.on(
+		updateWorkoutLogFx.fail,
+		() => 'Не удалось сохранить — проверь соединение и попробуй ещё раз.'
+	)
+	.reset(addSetFx.done)
+	.reset(deleteSetFx.done)
+	.reset(updateWorkoutLogFx.done)
+	.reset(workoutPageOpened);
+
+// --- сводка завершённой тренировки ---
+
+// «прошлый раз» по каждому упражнению лога — тот же ориентир, что и хинт в форме
+// (последний рабочий подход из прошлых тренировок). Нужен для дельты «вес вырос/упал»
+// в итоговой плите. Один запрос на упражнение; noCancel в getLastExerciseSet снимает
+// автоотмену параллельных вызовов к одной коллекции.
+export interface ExercisePrevWeight {
+	exerciseId: string;
+	prevWeight: number | null;
+}
+
+export const workoutSummaryRequested = createEvent<{ logId: string; exerciseIds: string[] }>();
+
+export const loadWorkoutSummaryFx = createEffect(
+	async ({
+		logId,
+		exerciseIds
+	}: {
+		logId: string;
+		exerciseIds: string[];
+	}): Promise<ExercisePrevWeight[]> => {
+		const userId = authUserId();
+		return Promise.all(
+			exerciseIds.map(async (exerciseId) => ({
+				exerciseId,
+				prevWeight: (await api.getLastExerciseSet(userId, exerciseId, logId))?.weight ?? null
+			}))
+		);
+	}
+);
+
+export const workoutSummary = createStore<ExercisePrevWeight[]>([])
+	.on(loadWorkoutSummaryFx.doneData, (_, items) => items)
+	.reset(workoutPageOpened);
+
+sample({ clock: workoutSummaryRequested, target: loadWorkoutSummaryFx });

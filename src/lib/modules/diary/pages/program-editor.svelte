@@ -96,7 +96,8 @@
 	{:else if !$editorProgram}
 		<Loader text="Загружаю…" />
 	{:else}
-		<a href="/diary" class="back mono"><Icon name="chevron-left" size={0.9} /> Дневник</a>
+		<a href="/diary" class="back mono hit-target"><Icon name="chevron-left" size={0.9} /> Дневник</a
+		>
 
 		<header class="rise">
 			<div class="header-row">
@@ -110,7 +111,13 @@
 					Экспорт
 				</Button>
 			</div>
-			<Input kind="ghost" size="lg" value={$editorProgram.name} onblur={renameProgram} />
+			<Input
+				kind="ghost"
+				size="lg"
+				value={$editorProgram.name}
+				aria-label="Название программы"
+				onblur={renameProgram}
+			/>
 		</header>
 
 		{#each $editorWorkouts as workout, i (workout.id)}
@@ -120,6 +127,7 @@
 					<Input
 						kind="ghost"
 						value={workout.name}
+						aria-label="Название тренировки"
 						onblur={(event) => renameWorkout(workout.id, event)}
 					/>
 					<Button
@@ -138,7 +146,10 @@
 						{#each exercisesByWorkout[workout.id] ?? [] as item (item.id)}
 							<li class="exercise">
 								<div class="exercise-name">
-									<a href="/exercises/{item.exercise}?ref={page.url.pathname}" class="exercise-link">
+									<a
+										href="/exercises/{item.exercise}?ref={page.url.pathname}"
+										class="exercise-link"
+									>
 										{item.expand?.exercise?.name ?? '—'}
 									</a>
 								</div>
@@ -158,15 +169,13 @@
 										</label>
 									{/each}
 								</div>
-								{#if item.notes || item.id}
-									<textarea
-										class="notes-input"
-										rows="2"
-										placeholder="Заметки к упражнению…"
-										onblur={(event) => changeNotes(item.id, event)}
-									>{item.notes}</textarea
-									>
-								{/if}
+								<textarea
+									class="notes-input"
+									rows="2"
+									placeholder="Заметки к упражнению…"
+									aria-label="Заметки к упражнению"
+									onblur={(event) => changeNotes(item.id, event)}>{item.notes}</textarea
+								>
 								<Button
 									kind="icon"
 									class="remove"

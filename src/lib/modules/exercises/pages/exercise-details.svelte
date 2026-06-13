@@ -32,11 +32,11 @@
 	{:else}
 		{@const item = $currentExercise}
 		{#if backRef}
-			<a href={backRef} class="back mono"
+			<a href={backRef} class="back mono hit-target"
 				><Icon name="chevron-left" size={0.9} /> Назад</a
 			>
 		{:else}
-			<a href="/exercises" class="back mono"
+			<a href="/exercises" class="back mono hit-target"
 				><Icon name="chevron-left" size={0.9} /> Все упражнения</a
 			>
 		{/if}
@@ -72,6 +72,7 @@
 							<iframe
 								src={embed}
 								title="Видео: {item.name}"
+								loading="lazy"
 								frameborder="0"
 								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 								allowfullscreen
@@ -159,9 +160,7 @@
 		margin-bottom: 12px;
 	}
 
-	.block.volt {
-		border-left: 3px solid var(--volt);
-	}
+	/* акцентная рамка и заливка — общий .plate.volt из app.css */
 
 	.block.volt h2 {
 		color: var(--volt);

@@ -206,6 +206,23 @@
 		color: var(--volt);
 	}
 
+	/* touch (планшеты с верхней навигацией): зона нажатия ссылок ≥44px */
+	@media (pointer: coarse) {
+		nav a {
+			position: relative;
+		}
+
+		nav a::after {
+			content: '';
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			width: max(100%, 2.75rem);
+			height: max(100%, 2.75rem);
+			transform: translate(-50%, -50%);
+		}
+	}
+
 	.tab-bar {
 		display: none;
 	}

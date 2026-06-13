@@ -23,7 +23,7 @@
 
 	.input::placeholder {
 		color: var(--muted);
-		opacity: 0.7;
+		opacity: 1;
 	}
 
 	.input[type='number'] {
@@ -88,6 +88,13 @@
 		padding: 0.875rem 1rem;
 		font-size: 1rem;
 		line-height: 1.25rem;
+	}
+
+	/* touch: sm-поля ниже 44px — добиваем высоту (поле, в отличие от кнопок, растёт визуально) */
+	@media (pointer: coarse) {
+		.boxed.sm {
+			min-height: 2.75rem;
+		}
 	}
 
 	/* date игнорирует line-height для внутренних частей — высота задаётся явно,

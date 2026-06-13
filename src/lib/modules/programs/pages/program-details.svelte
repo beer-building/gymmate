@@ -48,7 +48,9 @@
 		<Loader text="Загружаю…" />
 	{:else}
 		{@const { program, workouts, exercisesByWorkout } = $programDetails}
-		<a href="/programs" class="back mono"><Icon name="chevron-left" size={0.9} /> Все программы</a>
+		<a href="/programs" class="back mono hit-target"
+			><Icon name="chevron-left" size={0.9} /> Все программы</a
+		>
 
 		<header class="rise">
 			<p class="eyebrow">// программа · {workouts.length} тренир.</p>
@@ -87,7 +89,10 @@
 						{#each exercisesByWorkout[workout.id] ?? [] as item (item.id)}
 							<tr>
 								<td>
-									<a href="/exercises/{item.exercise}?ref={page.url.pathname}" class="exercise-link">
+									<a
+										href="/exercises/{item.exercise}?ref={page.url.pathname}"
+										class="exercise-link"
+									>
 										{item.expand?.exercise?.name ?? '—'}
 									</a>
 								</td>

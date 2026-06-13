@@ -44,11 +44,17 @@
 	});
 </script>
 
-<div class="tabs rise" class:sm={size === 'sm'} role="tablist" aria-label={label} bind:this={listEl}>
+<div
+	class="tabs rise"
+	class:sm={size === 'sm'}
+	role="tablist"
+	aria-label={label}
+	bind:this={listEl}
+>
 	<span
 		class="thumb"
 		class:ready={thumb.ready}
-		style:left="{thumb.left}px"
+		style:transform="translateX({thumb.left}px)"
 		style:width="{thumb.width}px"
 		aria-hidden="true"
 	></span>
@@ -84,6 +90,7 @@
 
 	.thumb {
 		position: absolute;
+		left: 0;
 		top: var(--track-pad);
 		bottom: var(--track-pad);
 		background: var(--bg-raised);
@@ -93,10 +100,11 @@
 		opacity: 0;
 	}
 
+	/* позиция через transform (композитится), а не left — без layout-прохода каждый кадр */
 	.thumb.ready {
 		opacity: 1;
 		transition:
-			left var(--spring-transition),
+			transform var(--spring-transition),
 			width var(--spring-transition);
 	}
 
@@ -140,5 +148,23 @@
 		font-size: 0.6875rem;
 		padding: 0.3125rem 0.75rem;
 		border-radius: var(--radius-pill);
+	}
+
+	/* touch: вкладки ниже 44px — добиваем зону нажатия по вертикали
+	   (ширина остаётся, соседние вкладки не перекрываются) */
+	@media (pointer: coarse) {
+		.tab {
+			position: relative;
+		}
+
+		.tab::after {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 50%;
+			width: 100%;
+			height: max(100%, 2.75rem);
+			transform: translateY(-50%);
+		}
 	}
 </style>
