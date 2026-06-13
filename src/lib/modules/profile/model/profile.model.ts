@@ -1,9 +1,11 @@
 import { createEffect, createEvent, createStore, sample } from 'effector';
 import * as diaryApi from '$lib/modules/diary/api';
+import * as exercisesApi from '$lib/modules/exercises/api';
 import { pb } from '$lib/shared/api';
 import {
 	buildExerciseSeries,
 	buildHeatmap,
+	buildMuscleHeatmap,
 	findRecentRecords,
 	pickNextWorkout,
 	setsPerDay,
@@ -11,6 +13,7 @@ import {
 	weekStreak,
 	type ExerciseSeries,
 	type HeatmapDay,
+	type MuscleHeatmapEntry,
 	type NextWorkout,
 	type PersonalRecord
 } from '../helpers/stats';
@@ -27,6 +30,7 @@ export interface Dashboard {
 	workoutsLast30: number;
 	volumeLast7: number;
 	heatmap: HeatmapDay[][];
+	muscleHeatmap: MuscleHeatmapEntry[];
 	records: PersonalRecord[];
 	exerciseSeries: ExerciseSeries[];
 }
@@ -38,11 +42,12 @@ export const loadDashboardFx = createEffect(async (): Promise<Dashboard> => {
 	if (!userId) throw new Error('not authenticated');
 
 	// все коллекции разные — параллельные запросы SDK не автоотменяет
-	const [logs, programs, logExercises, sets] = await Promise.all([
+	const [logs, programs, logExercises, sets, exerciseCatalog] = await Promise.all([
 		diaryApi.getWorkoutLogs(userId),
 		diaryApi.getUserPrograms(userId),
 		diaryApi.getAllUserLogExercises(userId),
-		diaryApi.getAllUserSets(userId)
+		diaryApi.getAllUserSets(userId),
+		exercisesApi.getExercises()
 	]);
 
 	const active = programs.filter((program) => !program.archived_at);
@@ -71,6 +76,7 @@ export const loadDashboardFx = createEffect(async (): Promise<Dashboard> => {
 		).length,
 		volumeLast7: volumeSince(logs, logExercises, sets, new Date(Date.now() - 7 * dayMs)),
 		heatmap: buildHeatmap(perDay, today, HEATMAP_WEEKS),
+		muscleHeatmap: buildMuscleHeatmap(logs, logExercises, sets, exerciseCatalog, today),
 		records: findRecentRecords(logs, logExercises, sets, 4),
 		exerciseSeries: buildExerciseSeries(logs, logExercises, sets)
 	};

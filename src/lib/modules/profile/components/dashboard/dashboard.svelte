@@ -1,14 +1,23 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { diaryModel } from '$lib/modules/diary/model';
+	import { authModel } from '$lib/modules/auth/model';
 	import { profileModel } from '../../model';
 	import { ActivityHeatmap } from '../activity-heatmap';
 	import { ExerciseChart } from '../exercise-chart';
+	import { MuscleMap, type MuscleIntensity } from '$lib/modules/exercises/components/muscle-map';
 	import { Button } from '$lib/shared/components/button';
 	import { Loader } from '$lib/shared/components/loader';
-	import { formatDate, formatSetsReps } from '$lib/shared/helpers/labels';
+	import {
+		formatDate,
+		formatSetsReps,
+		muscleGroupLabels,
+		plural
+	} from '$lib/shared/helpers/labels';
+	import type { MuscleGroup } from '$lib/shared/types';
 
 	const dashboard = profileModel.dashboard;
+	const gender = authModel.gender;
 
 	let starting = $state(false);
 
@@ -23,6 +32,42 @@
 			starting = false;
 		}
 	}
+
+	// одна реактивная производная вместо трёх независимых проходов по тому же массиву
+	const muscleView = $derived.by(() => {
+		const entries = $dashboard?.muscleHeatmap ?? [];
+		const byGroup = new Map(entries.map((entry) => [entry.group, entry]));
+		const intensities: Partial<Record<MuscleGroup, MuscleIntensity>> = {};
+		for (const entry of entries) intensities[entry.group] = entry.level;
+		const forgotten = entries
+			.filter((entry) => entry.daysSinceTrained !== null && entry.daysSinceTrained >= 10)
+			.sort((a, b) => (b.daysSinceTrained ?? 0) - (a.daysSinceTrained ?? 0))
+			.slice(0, 3);
+		const tooltip = (group: MuscleGroup): string => {
+			const entry = byGroup.get(group);
+			if (!entry) return muscleGroupLabels[group];
+			const parts = [
+				muscleGroupLabels[group],
+				`${entry.sets7d} ${plural(entry.sets7d, ['подход', 'подхода', 'подходов'])} за 7 дней`
+			];
+			if (entry.daysSinceTrained === null) {
+				parts.push('никогда не качал');
+			} else if (entry.daysSinceTrained === 0) {
+				parts.push('последняя тренировка сегодня');
+			} else {
+				parts.push(
+					`последняя ${entry.daysSinceTrained} ${plural(entry.daysSinceTrained, ['день', 'дня', 'дней'])} назад`
+				);
+			}
+			return parts.join(' · ');
+		};
+		return {
+			intensities,
+			forgotten,
+			tooltip,
+			hasAny: entries.some((entry) => entry.lastTrainedDay !== null)
+		};
+	});
 </script>
 
 {#if !$dashboard}
@@ -97,8 +142,37 @@
 		<ActivityHeatmap weeks={data.heatmap} />
 	</section>
 
+	{#if muscleView.hasAny}
+		<section class="plate block rise" style="animation-delay: 0.14s">
+			<h3 class="mono label">Карта нагрузки</h3>
+			<div class="muscle-map-wrap">
+				<MuscleMap
+					mode="heatmap"
+					variant={$gender}
+					intensities={muscleView.intensities}
+					tooltip={muscleView.tooltip}
+					showLegend
+				/>
+			</div>
+			{#if muscleView.forgotten.length > 0}
+				<ul class="forgotten">
+					{#each muscleView.forgotten as item (item.group)}
+						<li>
+							<span class="forgotten-name">{muscleGroupLabels[item.group]}</span>
+							<span class="mono days">
+								<b>{item.daysSinceTrained}</b>
+								{plural(item.daysSinceTrained ?? 0, ['день', 'дня', 'дней'])}
+							</span>
+							<span class="mono muted hint">давно не качал</span>
+						</li>
+					{/each}
+				</ul>
+			{/if}
+		</section>
+	{/if}
+
 	{#if data.exerciseSeries.length > 0}
-		<section class="plate block rise" style="animation-delay: 0.15s">
+		<section class="plate block rise" style="animation-delay: 0.16s">
 			<h3 class="mono label">Прогресс весов</h3>
 			<ExerciseChart series={data.exerciseSeries} />
 		</section>
@@ -284,6 +358,52 @@
 		white-space: nowrap;
 	}
 
+	.muscle-map-wrap {
+		max-width: 360px;
+		margin: 0 auto;
+	}
+
+	.forgotten {
+		list-style: none;
+		margin: 16px 0 0;
+		padding: 0;
+		border-top: 1px solid var(--line);
+	}
+
+	.forgotten li {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto auto;
+		align-items: baseline;
+		gap: 6px 14px;
+		padding-block: 9px;
+		border-bottom: 1px solid var(--line);
+		font-size: 14px;
+	}
+
+	.forgotten li:last-child {
+		border-bottom: none;
+	}
+
+	.forgotten-name {
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+
+	.forgotten .days {
+		font-size: 13px;
+		white-space: nowrap;
+	}
+
+	.forgotten .days b {
+		color: var(--volt);
+		font-weight: 600;
+	}
+
+	.forgotten .hint {
+		font-size: 11px;
+		white-space: nowrap;
+	}
+
 	@media (max-width: 600px) {
 		.block {
 			padding: 16px 14px;
@@ -311,6 +431,19 @@
 		}
 
 		.records .date {
+			justify-self: end;
+		}
+
+		/* забытые: название во всю ширину, дни и подпись — вторым рядом */
+		.forgotten li {
+			grid-template-columns: minmax(0, 1fr) auto;
+		}
+
+		.forgotten-name {
+			grid-column: 1 / -1;
+		}
+
+		.forgotten .hint {
 			justify-self: end;
 		}
 	}

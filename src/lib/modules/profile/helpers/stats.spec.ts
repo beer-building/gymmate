@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
 	buildExerciseSeries,
 	buildHeatmap,
+	buildMuscleHeatmap,
 	findRecentRecords,
 	pickNextWorkout,
 	setsPerDay,
@@ -9,6 +10,8 @@ import {
 	weekStreak
 } from './stats';
 import type {
+	Exercise,
+	MuscleGroup,
 	UserProgram,
 	UserProgramWorkout,
 	WorkoutLog,
@@ -69,6 +72,19 @@ function set(
 		completed: true,
 		created: '2026-06-01 10:00:00',
 		...extra
+	};
+}
+
+function exercise(id: string, muscle: MuscleGroup): Exercise {
+	return {
+		id,
+		name: `Упражнение ${id}`,
+		slug: id,
+		primary_muscle: muscle,
+		equipment: 'barbell',
+		difficulty: 'intermediate',
+		instructions: '',
+		videos: null
 	};
 }
 
@@ -278,5 +294,154 @@ describe('pickNextWorkout', () => {
 		const empty = { program: userProgram('p0'), workouts: [] };
 		const next = pickNextWorkout([empty, programA], []);
 		expect(next?.workout.id).toBe('w1');
+	});
+});
+
+describe('buildMuscleHeatmap', () => {
+	const catalog = [
+		exercise('ex-chest', 'chest'),
+		exercise('ex-legs', 'legs'),
+		exercise('ex-back', 'back')
+	];
+
+	function find(entries: ReturnType<typeof buildMuscleHeatmap>, group: MuscleGroup) {
+		return entries.find((item) => item.group === group)!;
+	}
+
+	it('считает рабочие подходы по группе за последние 7 дней, исключая разминку', () => {
+		const today = new Date(2026, 5, 13); // 2026-06-13
+		const logs = [
+			log('l1', '2026-06-13 10:00:00'),
+			log('l2', '2026-06-10 10:00:00'),
+			log('l3', '2026-06-05 10:00:00') // за пределами окна 7 дней
+		];
+		const exercises = [
+			logExercise('le1', 'l1', 'ex-chest', 'Жим'),
+			logExercise('le2', 'l2', 'ex-chest', 'Жим'),
+			logExercise('le3', 'l3', 'ex-chest', 'Жим')
+		];
+		const sets = [
+			set('s1', 'le1', 60, 8),
+			set('s2', 'le1', 60, 8),
+			set('s3', 'le1', 40, 12, { is_warmup: true }), // разминка не считается
+			set('s4', 'le2', 60, 8),
+			set('s5', 'le3', 60, 8) // вне окна
+		];
+
+		const entries = buildMuscleHeatmap(logs, exercises, sets, catalog, today);
+
+		expect(find(entries, 'chest').sets7d).toBe(3);
+		expect(find(entries, 'legs').sets7d).toBe(0);
+	});
+
+	it('возвращает все 11 групп даже без истории', () => {
+		const today = new Date(2026, 5, 13);
+		const entries = buildMuscleHeatmap([], [], [], catalog, today);
+		expect(entries).toHaveLength(11);
+		for (const entry of entries) {
+			expect(entry.sets7d).toBe(0);
+			expect(entry.lastTrainedDay).toBeNull();
+			expect(entry.daysSinceTrained).toBeNull();
+			expect(entry.level).toBe(0);
+		}
+	});
+
+	it('игнорирует подходы упражнений, которых нет в каталоге', () => {
+		const today = new Date(2026, 5, 13);
+		const logs = [log('l1', '2026-06-13 10:00:00')];
+		const exercises = [
+			logExercise('le1', 'l1', 'unknown-id', 'Удалённое'),
+			logExercise('le2', 'l1', '', 'Тоже удалённое')
+		];
+		const sets = [set('s1', 'le1', 60, 8), set('s2', 'le2', 60, 8)];
+
+		const entries = buildMuscleHeatmap(logs, exercises, sets, catalog, today);
+
+		for (const entry of entries) {
+			expect(entry.sets7d).toBe(0);
+			expect(entry.lastTrainedDay).toBeNull();
+		}
+	});
+
+	it('находит последний день тренировки группы за всю историю и считает дни', () => {
+		const today = new Date(2026, 5, 13); // 13 июня
+		const logs = [
+			log('l1', '2026-06-01 10:00:00'), // 12 дней назад
+			log('l2', '2026-05-20 10:00:00') // совсем давно
+		];
+		const exercises = [
+			logExercise('le1', 'l1', 'ex-legs', 'Присед'),
+			logExercise('le2', 'l2', 'ex-legs', 'Присед')
+		];
+		const sets = [set('s1', 'le1', 100, 5), set('s2', 'le2', 90, 5)];
+
+		const entries = buildMuscleHeatmap(logs, exercises, sets, catalog, today);
+		const legs = find(entries, 'legs');
+
+		expect(legs.lastTrainedDay).toBe('2026-06-01');
+		expect(legs.daysSinceTrained).toBe(12);
+		expect(legs.sets7d).toBe(0); // тренировки вне окна 7 дней
+	});
+
+	it('выставляет уровни: 0 / 1–9 / 10–19 / 20+', () => {
+		const today = new Date(2026, 5, 13);
+		const logs = [log('l1', '2026-06-13 10:00:00')];
+		const exercises = [
+			logExercise('le-chest', 'l1', 'ex-chest', 'Жим'),
+			logExercise('le-legs', 'l1', 'ex-legs', 'Присед'),
+			logExercise('le-back', 'l1', 'ex-back', 'Тяга')
+		];
+		const sets: WorkoutLogSet[] = [];
+		// 5 подходов на грудь → level 1
+		for (let i = 0; i < 5; i++) sets.push(set(`c${i}`, 'le-chest', 60, 8));
+		// 15 подходов на ноги → level 2
+		for (let i = 0; i < 15; i++) sets.push(set(`l${i}`, 'le-legs', 100, 5));
+		// 22 подхода на спину → level 3
+		for (let i = 0; i < 22; i++) sets.push(set(`b${i}`, 'le-back', 80, 6));
+
+		const entries = buildMuscleHeatmap(logs, exercises, sets, catalog, today);
+
+		expect(find(entries, 'chest').level).toBe(1);
+		expect(find(entries, 'legs').level).toBe(2);
+		expect(find(entries, 'back').level).toBe(3);
+		expect(find(entries, 'shoulders').level).toBe(0);
+	});
+
+	it('игнорирует логи с датой в будущем (опечатка в started_at)', () => {
+		const today = new Date(2026, 5, 13);
+		const logs = [
+			log('l-now', '2026-06-13 10:00:00'),
+			log('l-future', '2027-06-13 10:00:00') // на год вперёд — опечатка
+		];
+		const exercises = [
+			logExercise('le-now', 'l-now', 'ex-chest', 'Жим'),
+			logExercise('le-future', 'l-future', 'ex-legs', 'Присед')
+		];
+		const sets = [set('s1', 'le-now', 60, 8), set('s2', 'le-future', 100, 5)];
+
+		const entries = buildMuscleHeatmap(logs, exercises, sets, catalog, today);
+
+		expect(find(entries, 'chest').sets7d).toBe(1);
+		expect(find(entries, 'legs').sets7d).toBe(0);
+		expect(find(entries, 'legs').lastTrainedDay).toBeNull();
+		expect(find(entries, 'legs').daysSinceTrained).toBeNull();
+	});
+
+	it('окно 7 дней включает сегодня и 6 предыдущих календарных дней', () => {
+		const today = new Date(2026, 5, 13); // понедельник? — неважно, главное dayKey
+		const logs = [
+			log('l-old', '2026-06-06 23:30:00'), // 7 дней назад — ВНЕ окна
+			log('l-edge', '2026-06-07 00:30:00'), // 6 дней назад — В окне
+			log('l-today', '2026-06-13 10:00:00')
+		];
+		const exercises = [
+			logExercise('le1', 'l-old', 'ex-chest', 'Жим'),
+			logExercise('le2', 'l-edge', 'ex-chest', 'Жим'),
+			logExercise('le3', 'l-today', 'ex-chest', 'Жим')
+		];
+		const sets = [set('s1', 'le1', 60, 8), set('s2', 'le2', 60, 8), set('s3', 'le3', 60, 8)];
+
+		const entries = buildMuscleHeatmap(logs, exercises, sets, catalog, today);
+		expect(find(entries, 'chest').sets7d).toBe(2);
 	});
 });

@@ -1,4 +1,7 @@
+import { muscleGroupLabels } from '$lib/shared/helpers/labels';
 import type {
+	Exercise,
+	MuscleGroup,
 	UserProgram,
 	UserProgramWorkout,
 	WorkoutLog,
@@ -274,4 +277,72 @@ export function pickNextWorkout(
 		: -1;
 	const workout = current.workouts[(lastIndex + 1) % current.workouts.length];
 	return { program: current.program, workout };
+}
+
+export interface MuscleHeatmapEntry {
+	group: MuscleGroup;
+	sets7d: number; // рабочие подходы за последние 7 дней (включая сегодня)
+	lastTrainedDay: string | null; // YYYY-MM-DD; null если никогда
+	daysSinceTrained: number | null; // null если никогда
+	level: 0 | 1 | 2 | 3; // 0 / 1–9 / 10–19 / 20+
+}
+
+// Карта нагрузки по группам мышц. Подходы считаем рабочие (без разминки),
+// группу мышцы берём из каталога exercises по primary_muscle. Если упражнение
+// удалено из каталога (нет id или нет записи) — подход не считаем: группа неизвестна.
+// Возвращает все 11 групп, даже пустые — фронту нужно рисовать всю фигуру.
+export function buildMuscleHeatmap(
+	logs: WorkoutLog[],
+	logExercises: WorkoutLogExercise[],
+	sets: WorkoutLogSet[],
+	exercises: Exercise[],
+	today: Date
+): MuscleHeatmapEntry[] {
+	const muscleByExerciseId = new Map(exercises.map((item) => [item.id, item.primary_muscle]));
+	const logDay = new Map(logs.map((log) => [log.id, dayKey(new Date(log.started_at))]));
+
+	const exerciseInfo = new Map<string, { day: string; muscle: MuscleGroup }>();
+	for (const item of logExercises) {
+		const day = logDay.get(item.workout_log);
+		if (!day) continue;
+		const muscle = muscleByExerciseId.get(item.exercise);
+		if (!muscle) continue;
+		exerciseInfo.set(item.id, { day, muscle });
+	}
+
+	const todayKey = dayKey(today);
+	const since = dayKey(addDays(today, -6));
+	const sets7d = new Map<MuscleGroup, number>();
+	const lastDay = new Map<MuscleGroup, string>();
+	for (const set of sets) {
+		if (set.is_warmup) continue;
+		const info = exerciseInfo.get(set.workout_log_exercise);
+		if (!info) continue;
+		// логи с датой в будущем (опечатка) не должны раздувать sets7d и lastDay
+		if (info.day > todayKey) continue;
+		if (info.day >= since) {
+			sets7d.set(info.muscle, (sets7d.get(info.muscle) ?? 0) + 1);
+		}
+		const previous = lastDay.get(info.muscle);
+		if (!previous || info.day > previous) {
+			lastDay.set(info.muscle, info.day);
+		}
+	}
+
+	const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+	const dayMs = 24 * 60 * 60 * 1000;
+	const groups = Object.keys(muscleGroupLabels) as MuscleGroup[];
+
+	return groups.map<MuscleHeatmapEntry>((group) => {
+		const count = sets7d.get(group) ?? 0;
+		const lastTrainedDay = lastDay.get(group) ?? null;
+		let daysSinceTrained: number | null = null;
+		if (lastTrainedDay) {
+			const [year, month, day] = lastTrainedDay.split('-').map(Number);
+			const lastMidnight = new Date(year, month - 1, day).getTime();
+			daysSinceTrained = Math.max(0, Math.round((todayMidnight - lastMidnight) / dayMs));
+		}
+		const level: 0 | 1 | 2 | 3 = count >= 20 ? 3 : count >= 10 ? 2 : count >= 1 ? 1 : 0;
+		return { group, sets7d: count, lastTrainedDay, daysSinceTrained, level };
+	});
 }
