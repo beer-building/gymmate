@@ -25,3 +25,12 @@ vite.config.ts.timestamp-*
 # Paraglide
 src/lib/paraglide
 project.inlang/cache/
+
+# AI-инструменты и установленные скиллы агентов
+.agents/
+.claude/
+.cursor/
+.gemini/
+.kiro/
+.opencode/
+.impeccable/
