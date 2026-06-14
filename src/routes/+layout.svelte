@@ -59,7 +59,7 @@
 <header>
 	<div class="container bar">
 		<a href="/" class="logo">
-			<span class="pulse" aria-hidden="true"></span>
+			<img class="logo-mark" src="/icons/icon-192.png" alt="" width="30" height="30" />
 			GYM<span class="accent">MATE</span>
 		</a>
 
@@ -160,24 +160,21 @@
 		color: var(--volt);
 	}
 
-	.pulse {
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		background: var(--volt);
-		box-shadow: 0 0 0 0 oklch(from var(--volt) l c h / 0.6);
-		animation: pulse 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+	.logo-mark {
+		width: 30px;
+		height: 30px;
+		object-fit: contain;
+		filter: drop-shadow(0 0 6px oklch(from var(--volt) l c h / 0.35));
+		transition: transform 0.18s var(--spring-transition, ease);
 	}
 
-	@keyframes pulse {
-		0% {
-			box-shadow: 0 0 0 0 oklch(from var(--volt) l c h / 0.55);
-		}
-		70% {
-			box-shadow: 0 0 0 10px oklch(from var(--volt) l c h / 0);
-		}
-		100% {
-			box-shadow: 0 0 0 0 oklch(from var(--volt) l c h / 0);
+	.logo:hover .logo-mark {
+		transform: scale(1.08) rotate(-4deg);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.logo-mark {
+			transition: none;
 		}
 	}
 
