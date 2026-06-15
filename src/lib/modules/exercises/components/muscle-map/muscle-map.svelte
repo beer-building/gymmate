@@ -113,6 +113,10 @@
 	}
 
 	.map {
+		/* подсветка мышц (select-режим): жёлтый наследует l/c красного,
+		   отличается только hue → одинаковая яркость и насыщенность */
+		--primary: oklch(0.53 0.2 27.61);
+		--secondary: oklch(from var(--primary) calc(l + 0.13) c 90);
 		display: flex;
 		gap: 16px;
 		justify-content: center;
@@ -173,18 +177,18 @@
 	}
 
 	.interactive .muscle:not(.bodypart):not(.active):hover {
-		fill: oklch(from var(--danger) l c h / 0.55);
+		fill: oklch(from var(--primary) l c h / 0.55);
 	}
 
 	.muscle.active {
-		fill: var(--danger);
-		filter: drop-shadow(0 0 3px oklch(from var(--danger) l c h / 0.7));
+		fill: var(--primary);
+		filter: drop-shadow(0 0 3px oklch(from var(--primary) l c h / 0.7));
 	}
 
 	/* вторичные мышцы — жёлтым, тише основной подсветки */
 	.muscle.secondary:not(.bodypart) {
-		fill: var(--volt);
-		filter: drop-shadow(0 0 3px oklch(from var(--volt) l c h / 0.5));
+		fill: var(--secondary);
+		filter: drop-shadow(0 0 3px oklch(from var(--secondary) l c h / 0.5));
 	}
 
 	.heatmap .muscle.level-1:not(.bodypart) {
