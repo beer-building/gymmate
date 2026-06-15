@@ -34,6 +34,7 @@ export interface Exercise {
 	name: string;
 	slug: string;
 	primary_muscle: MuscleGroup;
+	secondary_muscles: MuscleGroup[];
 	equipment: Equipment;
 	difficulty: Difficulty;
 	instructions: string;

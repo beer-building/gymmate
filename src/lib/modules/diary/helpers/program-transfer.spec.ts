@@ -29,6 +29,7 @@ function exercise(slug: string, name: string): Exercise {
 		name,
 		slug,
 		primary_muscle: 'chest',
+		secondary_muscles: [],
 		equipment: 'barbell',
 		difficulty: 'beginner',
 		instructions: '',

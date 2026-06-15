@@ -12,6 +12,8 @@
 		mode?: 'select' | 'heatmap';
 		selected?: MuscleGroup | null;
 		highlighted?: MuscleGroup[];
+		// вторичные мышцы — красятся отдельным (жёлтым) цветом
+		secondary?: MuscleGroup[];
 		interactive?: boolean;
 		onselect?: (group: MuscleGroup | null) => void;
 		intensities?: Partial<Record<MuscleGroup, MuscleIntensity>>;
@@ -24,6 +26,7 @@
 		mode = 'select',
 		selected = null,
 		highlighted = [],
+		secondary = [],
 		interactive = false,
 		onselect,
 		intensities,
@@ -41,6 +44,11 @@
 	function isActive(group: MuscleGroup | null): boolean {
 		if (heatmap || group === null) return false;
 		return selected === group || highlighted.includes(group);
+	}
+
+	function isSecondary(group: MuscleGroup | null): boolean {
+		if (heatmap || group === null) return false;
+		return secondary.includes(group) && !isActive(group);
 	}
 
 	function levelOf(group: MuscleGroup | null): MuscleIntensity {
@@ -69,6 +77,7 @@
 						class="muscle level-{levelOf(path.group)}"
 						class:bodypart={path.group === null}
 						class:active={isActive(path.group)}
+						class:secondary={isSecondary(path.group)}
 						d={path.d}
 						onclick={() => pick(path.group)}
 					>
@@ -170,6 +179,12 @@
 	.muscle.active {
 		fill: var(--danger);
 		filter: drop-shadow(0 0 3px oklch(from var(--danger) l c h / 0.7));
+	}
+
+	/* вторичные мышцы — жёлтым, тише основной подсветки */
+	.muscle.secondary:not(.bodypart) {
+		fill: var(--volt);
+		filter: drop-shadow(0 0 3px oklch(from var(--volt) l c h / 0.5));
 	}
 
 	.heatmap .muscle.level-1:not(.bodypart) {

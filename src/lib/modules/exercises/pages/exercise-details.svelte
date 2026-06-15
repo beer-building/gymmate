@@ -51,7 +51,11 @@
 				</div>
 			</div>
 			<div class="head-map">
-				<MuscleMap variant={$gender} highlighted={[item.primary_muscle]} />
+				<MuscleMap
+					variant={$gender}
+					highlighted={[item.primary_muscle]}
+					secondary={item.secondary_muscles}
+				/>
 			</div>
 		</header>
 

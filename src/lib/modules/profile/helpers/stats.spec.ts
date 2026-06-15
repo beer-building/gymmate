@@ -81,6 +81,7 @@ function exercise(id: string, muscle: MuscleGroup): Exercise {
 		name: `Упражнение ${id}`,
 		slug: id,
 		primary_muscle: muscle,
+		secondary_muscles: [],
 		equipment: 'barbell',
 		difficulty: 'intermediate',
 		instructions: '',
