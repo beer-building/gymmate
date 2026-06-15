@@ -24,7 +24,7 @@
 		const result: { muscle: MuscleGroup; label: string; items: Exercise[] }[] = [];
 		for (const muscle of Object.keys(muscleGroupLabels) as MuscleGroup[]) {
 			const items = exercises
-				.filter((exercise) => exercise.primary_muscle === muscle)
+				.filter((exercise) => exercise.primary_muscles.includes(muscle))
 				.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
 			if (items.length > 0) result.push({ muscle, label: muscleGroupLabels[muscle], items });
 		}

@@ -33,7 +33,7 @@ export interface Exercise {
 	id: string;
 	name: string;
 	slug: string;
-	primary_muscle: MuscleGroup;
+	primary_muscles: MuscleGroup[];
 	secondary_muscles: MuscleGroup[];
 	equipment: Equipment;
 	difficulty: Difficulty;

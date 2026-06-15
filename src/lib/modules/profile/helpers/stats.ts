@@ -288,8 +288,9 @@ export interface MuscleHeatmapEntry {
 }
 
 // Карта нагрузки по группам мышц. Подходы считаем рабочие (без разминки),
-// группу мышцы берём из каталога exercises по primary_muscle. Если упражнение
-// удалено из каталога (нет id или нет записи) — подход не считаем: группа неизвестна.
+// группы берём из каталога exercises по primary_muscles — у компаундов их
+// несколько, и подход засчитывается в каждую (secondary не учитываем). Если
+// упражнение удалено из каталога (нет id или нет записи) — подход не считаем.
 // Возвращает все 11 групп, даже пустые — фронту нужно рисовать всю фигуру.
 export function buildMuscleHeatmap(
 	logs: WorkoutLog[],
@@ -298,16 +299,16 @@ export function buildMuscleHeatmap(
 	exercises: Exercise[],
 	today: Date
 ): MuscleHeatmapEntry[] {
-	const muscleByExerciseId = new Map(exercises.map((item) => [item.id, item.primary_muscle]));
+	const muscleByExerciseId = new Map(exercises.map((item) => [item.id, item.primary_muscles]));
 	const logDay = new Map(logs.map((log) => [log.id, dayKey(new Date(log.started_at))]));
 
-	const exerciseInfo = new Map<string, { day: string; muscle: MuscleGroup }>();
+	const exerciseInfo = new Map<string, { day: string; muscles: MuscleGroup[] }>();
 	for (const item of logExercises) {
 		const day = logDay.get(item.workout_log);
 		if (!day) continue;
-		const muscle = muscleByExerciseId.get(item.exercise);
-		if (!muscle) continue;
-		exerciseInfo.set(item.id, { day, muscle });
+		const muscles = muscleByExerciseId.get(item.exercise);
+		if (!muscles || muscles.length === 0) continue;
+		exerciseInfo.set(item.id, { day, muscles });
 	}
 
 	const todayKey = dayKey(today);
@@ -320,12 +321,14 @@ export function buildMuscleHeatmap(
 		if (!info) continue;
 		// логи с датой в будущем (опечатка) не должны раздувать sets7d и lastDay
 		if (info.day > todayKey) continue;
-		if (info.day >= since) {
-			sets7d.set(info.muscle, (sets7d.get(info.muscle) ?? 0) + 1);
-		}
-		const previous = lastDay.get(info.muscle);
-		if (!previous || info.day > previous) {
-			lastDay.set(info.muscle, info.day);
+		for (const muscle of info.muscles) {
+			if (info.day >= since) {
+				sets7d.set(muscle, (sets7d.get(muscle) ?? 0) + 1);
+			}
+			const previous = lastDay.get(muscle);
+			if (!previous || info.day > previous) {
+				lastDay.set(muscle, info.day);
+			}
 		}
 	}
 

@@ -139,7 +139,9 @@
 					class="plate card rise"
 					style="animation-delay: {Math.min(i * 0.03, 0.3)}s"
 				>
-					<span class="group mono">{muscleGroupLabels[exercise.primary_muscle]}</span>
+					<span class="group mono"
+						>{exercise.primary_muscles.map((m) => muscleGroupLabels[m]).join(' · ')}</span
+					>
 					<h2>{exercise.name}</h2>
 					{#if exercise.instructions}
 						<p class="muted">{stripHtml(exercise.instructions)}</p>

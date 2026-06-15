@@ -30,7 +30,7 @@ export const filteredExercises = combine(
 		const normalized = query.trim().toLowerCase();
 		return items.filter(
 			(item) =>
-				(!group || item.primary_muscle === group) &&
+				(!group || item.primary_muscles.includes(group)) &&
 				(!normalized || item.name.toLowerCase().includes(normalized))
 		);
 	}

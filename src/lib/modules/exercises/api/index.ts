@@ -3,7 +3,7 @@ import type { Exercise, MuscleGroup } from '$lib/shared/types';
 
 export async function getExercises(muscleGroup?: MuscleGroup): Promise<Exercise[]> {
 	return pb.collection('exercises').getFullList<Exercise>({
-		filter: muscleGroup ? pb.filter('primary_muscle = {:group}', { group: muscleGroup }) : '',
+		filter: muscleGroup ? pb.filter('primary_muscles ?= {:group}', { group: muscleGroup }) : '',
 		sort: 'name'
 	});
 }

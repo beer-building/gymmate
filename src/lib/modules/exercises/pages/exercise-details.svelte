@@ -43,7 +43,7 @@
 
 		<header class="rise">
 			<div class="head-text">
-				<p class="eyebrow">// {muscleGroupLabels[item.primary_muscle]}</p>
+				<p class="eyebrow">// {item.primary_muscles.map((m) => muscleGroupLabels[m]).join(' · ')}</p>
 				<h1>{item.name}</h1>
 				<div class="chips">
 					<span class="chip static">{equipmentLabels[item.equipment]}</span>
@@ -53,7 +53,7 @@
 			<div class="head-map">
 				<MuscleMap
 					variant={$gender}
-					highlighted={[item.primary_muscle]}
+					highlighted={item.primary_muscles}
 					secondary={item.secondary_muscles}
 				/>
 			</div>

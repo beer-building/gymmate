@@ -28,7 +28,7 @@ function exercise(slug: string, name: string): Exercise {
 		id: `id-${slug}`,
 		name,
 		slug,
-		primary_muscle: 'chest',
+		primary_muscles: ['chest'],
 		secondary_muscles: [],
 		equipment: 'barbell',
 		difficulty: 'beginner',
