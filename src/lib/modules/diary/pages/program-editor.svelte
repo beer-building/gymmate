@@ -6,11 +6,12 @@
 	import { authModel } from '$lib/modules/auth/model';
 	import { ExerciseSelect } from '$lib/modules/exercises/components/exercise-select';
 	import { findSimilarExercises } from '$lib/modules/exercises/helpers/find-similar';
+	import { suggestStretches } from '$lib/modules/exercises/helpers/suggest-stretches';
 	import { Input } from '$lib/shared/components/input';
 	import { Icon } from '$lib/shared/components/icon';
 	import { Button } from '$lib/shared/components/button';
 	import { Loader } from '$lib/shared/components/loader';
-	import type { UserProgramWorkoutExercise } from '$lib/shared/types';
+	import type { Exercise, UserProgramWorkoutExercise } from '$lib/shared/types';
 	import { SortableList, sortItems } from '@rodrigodagostino/svelte-sortable-list';
 	import '@rodrigodagostino/svelte-sortable-list/styles.css';
 
@@ -107,6 +108,15 @@
 		);
 	}
 
+	// подсказка растяжек под тренировку: по мышцам её упражнений, топ-3;
+	// уже добавленные в тренировку suggestStretches исключает сам
+	function stretchesFor(workoutId: string) {
+		const planned = (exercisesByWorkout[workoutId] ?? [])
+			.map((item) => item.expand?.exercise)
+			.filter((item): item is Exercise => Boolean(item));
+		return suggestStretches(planned, $catalog, 3);
+	}
+
 	function replaceExercise(item: UserProgramWorkoutExercise, exerciseId: string) {
 		if (!exerciseId || exerciseId === item.exercise) return;
 		// меняем только упражнение — целевые подходы/повторы/вес сохраняются
@@ -175,6 +185,7 @@
 		</header>
 
 		{#each $editorWorkouts as workout, i (workout.id)}
+			{@const stretches = stretchesFor(workout.id)}
 			<section
 				class="plate block rise"
 				style="animation-delay: {0.06 + i * 0.05}s"
@@ -305,6 +316,22 @@
 						Добавить
 					</Button>
 				</div>
+
+				{#if stretches.length > 0}
+					<!-- растяжка в конец тренировки: подбор по мышцам её упражнений, тап добавляет -->
+					<div class="stretch-suggest">
+						<span class="mono hint">растяжка:</span>
+						{#each stretches as stretch (stretch.id)}
+							<button
+								class="chip"
+								onclick={() =>
+									userProgramModel.exerciseAdded({ workoutId: workout.id, exerciseId: stretch.id })}
+							>
+								+ {stretch.name}
+							</button>
+						{/each}
+					</div>
+				{/if}
 			</section>
 		{/each}
 
@@ -533,6 +560,21 @@
 		display: flex;
 		gap: 10px;
 		align-items: center;
+	}
+
+	.stretch-suggest {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 8px;
+		margin-top: 12px;
+	}
+
+	.stretch-suggest .hint {
+		font-size: 11px;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: var(--color-muted);
 	}
 
 	.add-exercise :global(.btn) {
