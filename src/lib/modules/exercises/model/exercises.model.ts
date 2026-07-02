@@ -1,6 +1,6 @@
 import { combine, createEffect, createEvent, createStore, sample } from 'effector';
 import * as api from '../api';
-import type { Exercise, MuscleGroup } from '$lib/shared/types';
+import type { Exercise, ExerciseKind, MuscleGroup } from '$lib/shared/types';
 
 // --- список упражнений: грузим весь каталог, фильтруем на клиенте ---
 
@@ -22,14 +22,20 @@ export const muscleGroup = createStore<MuscleGroup | null>(null).on(
 
 export const searchQuery = createStore('').on(searchChanged, (_, query) => query);
 
+export const kindSelected = createEvent<ExerciseKind | null>();
+
+export const kind = createStore<ExerciseKind | null>(null).on(kindSelected, (_, value) => value);
+
 export const filteredExercises = combine(
 	exercises,
 	muscleGroup,
 	searchQuery,
-	(items, group, query) => {
+	kind,
+	(items, group, query, kindFilter) => {
 		const normalized = query.trim().toLowerCase();
 		return items.filter(
 			(item) =>
+				(!kindFilter || item.kind === kindFilter) &&
 				(!group || item.primary_muscles.includes(group)) &&
 				(!normalized || item.name.toLowerCase().includes(normalized))
 		);

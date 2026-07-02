@@ -1,4 +1,4 @@
-import type { Difficulty, Equipment, Goal, MuscleGroup } from '$lib/shared/types';
+import type { Difficulty, Equipment, ExerciseKind, Goal, MuscleGroup } from '$lib/shared/types';
 
 export const muscleGroupLabels: Record<MuscleGroup, string> = {
 	chest: 'Грудь',
@@ -12,6 +12,12 @@ export const muscleGroupLabels: Record<MuscleGroup, string> = {
 	forearms: 'Предплечья',
 	abs: 'Пресс',
 	neck: 'Шея'
+};
+
+export const exerciseKindLabels: Record<ExerciseKind, string> = {
+	strength: 'Силовые',
+	warmup: 'Разминка',
+	stretching: 'Растяжка'
 };
 
 export const equipmentLabels: Record<Equipment, string> = {

@@ -5,30 +5,40 @@
 	import { Tabs } from '$lib/shared/components/tabs';
 	import { Icon } from '$lib/shared/components/icon';
 	import { Loader } from '$lib/shared/components/loader';
-	import { muscleGroupLabels, equipmentLabels, difficultyLabels } from '$lib/shared/helpers/labels';
-	import type { MuscleGroup } from '$lib/shared/types';
+	import {
+		muscleGroupLabels,
+		equipmentLabels,
+		difficultyLabels,
+		exerciseKindLabels
+	} from '$lib/shared/helpers/labels';
+	import type { ExerciseKind, MuscleGroup } from '$lib/shared/types';
 
 	const exercisesError = exercisesModel.exercisesError;
 	const exercisesLoading = exercisesModel.exercisesLoading;
 	const filteredExercises = exercisesModel.filteredExercises;
 	const muscleGroup = exercisesModel.muscleGroup;
 	const searchQuery = exercisesModel.searchQuery;
+	const kind = exercisesModel.kind;
 	const gender = authModel.gender;
 	const user = authModel.user;
 
 	let tab = $state<'map' | 'search'>('map');
 
 	const groups = Object.entries(muscleGroupLabels) as [MuscleGroup, string][];
+	const kinds = Object.entries(exerciseKindLabels) as [ExerciseKind, string][];
 
 	$effect(() => {
 		exercisesModel.exercisesPageOpened();
 	});
 
-	const hasFilters = $derived($muscleGroup !== null || $searchQuery.trim() !== '');
+	const hasFilters = $derived(
+		$muscleGroup !== null || $searchQuery.trim() !== '' || $kind !== null
+	);
 
 	function resetFilters() {
 		exercisesModel.muscleGroupSelected(null);
 		exercisesModel.searchChanged('');
+		exercisesModel.kindSelected(null);
 	}
 
 	// в карточке — текстовое превью без HTML-разметки инструкции
@@ -55,6 +65,24 @@
 	/>
 
 	<div class="filters plate rise" style="animation-delay: 0.08s">
+		<div class="chips kind-chips">
+			<button
+				class="chip"
+				class:active={$kind === null}
+				onclick={() => exercisesModel.kindSelected(null)}
+			>
+				Все
+			</button>
+			{#each kinds as [value, label] (value)}
+				<button
+					class="chip"
+					class:active={$kind === value}
+					onclick={() => exercisesModel.kindSelected(value)}
+				>
+					{label}
+				</button>
+			{/each}
+		</div>
 		{#if tab === 'map'}
 			<div class="map-layout">
 				<div class="map-col">
@@ -121,6 +149,9 @@
 	{:else}
 		<div class="meta-row mono">
 			<span>Найдено: <b>{$filteredExercises.length}</b></span>
+			{#if $kind}
+				<span class="filter-tag">{exerciseKindLabels[$kind]}</span>
+			{/if}
 			{#if $muscleGroup}
 				<span class="filter-tag">{muscleGroupLabels[$muscleGroup]}</span>
 			{/if}
@@ -172,6 +203,10 @@
 	.filters {
 		padding: 24px;
 		margin-bottom: 24px;
+	}
+
+	.kind-chips {
+		margin-bottom: 18px;
 	}
 
 	.search-input {
