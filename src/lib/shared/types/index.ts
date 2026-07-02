@@ -24,6 +24,8 @@ export type Equipment =
 
 export type Difficulty = 'beginner' | 'intermediate' | 'advanced';
 
+export type ExerciseKind = 'strength' | 'warmup' | 'stretching';
+
 export type Goal = 'mass' | 'weight_loss' | 'relief' | 'strength';
 
 // У необязательных number-полей PocketBase 0 означает «не задано»
@@ -33,6 +35,7 @@ export interface Exercise {
 	id: string;
 	name: string;
 	slug: string;
+	kind: ExerciseKind;
 	primary_muscles: MuscleGroup[];
 	secondary_muscles: MuscleGroup[];
 	equipment: Equipment;
@@ -71,6 +74,7 @@ export interface ProgramWorkoutExercise {
 	target_reps_max: number;
 	target_weight: number;
 	rest_seconds: number;
+	target_duration_seconds: number; // для kind warmup/stretching; 0 = не задано
 	notes: string;
 	expand?: { exercise: Exercise };
 }
@@ -105,6 +109,7 @@ export interface UserProgramWorkoutExercise {
 	target_reps_max: number;
 	target_weight: number;
 	rest_seconds: number;
+	target_duration_seconds: number; // для kind warmup/stretching; 0 = не задано
 	notes: string;
 	expand?: { exercise: Exercise };
 }

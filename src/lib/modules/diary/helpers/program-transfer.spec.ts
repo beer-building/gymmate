@@ -28,6 +28,7 @@ function exercise(slug: string, name: string): Exercise {
 		id: `id-${slug}`,
 		name,
 		slug,
+		kind: 'strength',
 		primary_muscles: ['chest'],
 		secondary_muscles: [],
 		equipment: 'barbell',
@@ -48,6 +49,7 @@ const exercises: UserProgramWorkoutExercise[] = [
 		target_reps_max: 5,
 		target_weight: 100,
 		rest_seconds: 180,
+		target_duration_seconds: 0,
 		notes: '',
 		expand: { exercise: exercise('prised', 'Приседания') }
 	},
@@ -61,6 +63,7 @@ const exercises: UserProgramWorkoutExercise[] = [
 		target_reps_max: 12,
 		target_weight: 60,
 		rest_seconds: 90,
+		target_duration_seconds: 0,
 		notes: 'пауза внизу',
 		expand: { exercise: exercise('zhim-lezha', 'Жим лёжа') }
 	}
@@ -132,8 +135,21 @@ describe('program-transfer', () => {
 			target_reps_max: 0,
 			target_weight: 60,
 			rest_seconds: 0,
+			target_duration_seconds: 0,
 			notes: ''
 		});
+	});
+
+	it('переносит целевую длительность разминки/растяжки', () => {
+		const stretching: UserProgramWorkoutExercise = {
+			...exercises[0],
+			id: 'e3',
+			target_duration_seconds: 300,
+			expand: { exercise: { ...exercise('rastyazhka', 'Растяжка'), kind: 'stretching' } }
+		};
+		const file = serializeProgram(program, workouts, [...exercises, stretching]);
+		const parsed = parseProgramFile(JSON.stringify(file));
+		expect(parsed.workouts[0].exercises.at(-1)?.target_duration_seconds).toBe(300);
 	});
 
 	it('требует slug у каждого упражнения', () => {

@@ -19,6 +19,7 @@ export interface ProgramFileExercise {
 	target_reps_max: number;
 	target_weight: number;
 	rest_seconds: number;
+	target_duration_seconds: number;
 	notes: string;
 }
 
@@ -62,6 +63,7 @@ export function serializeProgram(
 						target_reps_max: item.target_reps_max,
 						target_weight: item.target_weight,
 						rest_seconds: item.rest_seconds,
+						target_duration_seconds: item.target_duration_seconds,
 						notes: item.notes
 					}))
 			}))
@@ -138,6 +140,7 @@ export function parseProgramFile(text: string): ProgramFile {
 						target_reps_max: asNonNegativeNumber(fields.target_reps_max),
 						target_weight: asNonNegativeNumber(fields.target_weight),
 						rest_seconds: asNonNegativeNumber(fields.rest_seconds),
+						target_duration_seconds: asNonNegativeNumber(fields.target_duration_seconds),
 						notes: asText(fields.notes)
 					};
 				})

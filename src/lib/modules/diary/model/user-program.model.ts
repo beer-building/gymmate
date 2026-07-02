@@ -145,6 +145,7 @@ export const addExerciseFx = createEffect(
 			target_reps_max: 0,
 			target_weight: 0,
 			rest_seconds: 0,
+			target_duration_seconds: 0,
 			notes: ''
 		})
 );

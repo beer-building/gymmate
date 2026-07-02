@@ -129,6 +129,7 @@ export const forkProgramFx = createEffect(async (details: ProgramDetails) => {
 				target_reps_max: item.target_reps_max,
 				target_weight: item.target_weight,
 				rest_seconds: item.rest_seconds,
+				target_duration_seconds: item.target_duration_seconds,
 				notes: item.notes
 			});
 		}
@@ -180,6 +181,7 @@ export const importProgramFx = createEffect(async (file: File) => {
 				target_reps_max: exercise.target_reps_max,
 				target_weight: exercise.target_weight,
 				rest_seconds: exercise.rest_seconds,
+				target_duration_seconds: exercise.target_duration_seconds,
 				notes: exercise.notes
 			});
 		}
