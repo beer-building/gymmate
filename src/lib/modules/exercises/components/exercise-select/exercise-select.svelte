@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Select } from '$lib/shared/components/select';
-	import { muscleGroupLabels } from '$lib/shared/helpers/labels';
+	import { exerciseKindLabels, muscleGroupLabels } from '$lib/shared/helpers/labels';
 	import type { Exercise, MuscleGroup } from '$lib/shared/types';
 
 	type Props = {
@@ -19,14 +19,21 @@
 		...rest
 	}: Props = $props();
 
-	// optgroup по группам мышц, внутри — по алфавиту
+	// силовые — optgroup по группам мышц (внутри по алфавиту); разминки и
+	// растяжки — своими optgroup в конце, чтобы не смешивались с силовыми
 	const groups = $derived.by(() => {
-		const result: { muscle: MuscleGroup; label: string; items: Exercise[] }[] = [];
+		const result: { key: string; label: string; items: Exercise[] }[] = [];
+		const byName = (a: Exercise, b: Exercise) => a.name.localeCompare(b.name, 'ru');
+		const strength = exercises.filter((exercise) => exercise.kind === 'strength');
 		for (const muscle of Object.keys(muscleGroupLabels) as MuscleGroup[]) {
-			const items = exercises
+			const items = strength
 				.filter((exercise) => exercise.primary_muscles.includes(muscle))
-				.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
-			if (items.length > 0) result.push({ muscle, label: muscleGroupLabels[muscle], items });
+				.sort(byName);
+			if (items.length > 0) result.push({ key: muscle, label: muscleGroupLabels[muscle], items });
+		}
+		for (const kind of ['warmup', 'stretching'] as const) {
+			const items = exercises.filter((exercise) => exercise.kind === kind).sort(byName);
+			if (items.length > 0) result.push({ key: kind, label: exerciseKindLabels[kind], items });
 		}
 		return result;
 	});
@@ -34,7 +41,7 @@
 
 <Select bind:value {...rest}>
 	<option value="" disabled>{placeholder}</option>
-	{#each groups as group (group.muscle)}
+	{#each groups as group (group.key)}
 		<optgroup label={group.label}>
 			{#each group.items as exercise (exercise.id)}
 				<option value={exercise.id}>{exercise.name}</option>
