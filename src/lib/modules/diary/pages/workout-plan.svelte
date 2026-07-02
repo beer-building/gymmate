@@ -117,13 +117,13 @@
 		align-items: center;
 		gap: 6px;
 		font-size: 12px;
-		color: var(--muted);
+		color: var(--color-muted);
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
 	}
 
 	.back:hover {
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	header {
@@ -164,7 +164,7 @@
 
 	.exercise {
 		padding-block: 14px;
-		border-bottom: 1px solid var(--line);
+		border-bottom: 1px solid var(--color-border);
 	}
 
 	.exercise:last-child {
@@ -179,7 +179,7 @@
 	}
 
 	.num {
-		color: var(--volt);
+		color: var(--color-accent);
 		font-size: 12px;
 		flex-shrink: 0;
 	}
@@ -192,7 +192,7 @@
 	}
 
 	.exercise-link:hover {
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	.exercise-meta {
@@ -203,8 +203,8 @@
 	}
 
 	.tag {
-		background: var(--bg-sunken);
-		border: 1px solid var(--line);
+		background: var(--color-sunken);
+		border: 1px solid var(--color-border);
 		border-radius: var(--border-radius);
 		padding: 2px 8px;
 	}

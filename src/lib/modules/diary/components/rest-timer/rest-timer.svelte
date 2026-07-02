@@ -157,21 +157,21 @@
 		padding: 12px 16px;
 		overflow: hidden;
 		animation: rise var(--spring-transition) both;
-		box-shadow: 0 14px 40px -18px oklch(from var(--bg) calc(l * 0.2) c h / 0.9);
+		box-shadow: 0 14px 40px -18px oklch(from var(--color-background) calc(l * 0.2) c h / 0.9);
 	}
 
 	.rest.finished {
-		border-color: var(--volt);
+		border-color: var(--color-accent);
 		box-shadow:
-			0 14px 40px -18px oklch(from var(--volt) l c h / 0.5),
-			0 0 0 1px oklch(from var(--volt) l c h / 0.2);
+			0 14px 40px -18px oklch(from var(--color-accent) l c h / 0.5),
+			0 0 0 1px oklch(from var(--color-accent) l c h / 0.2);
 	}
 
 	.bar {
 		position: absolute;
 		inset: 0;
-		background: oklch(from var(--volt) l c h / 0.12);
-		border-right: 2px solid oklch(from var(--volt) l c h / 0.5);
+		background: oklch(from var(--color-accent) l c h / 0.12);
+		border-right: 2px solid oklch(from var(--color-accent) l c h / 0.5);
 		transition: transform 0.25s linear;
 		pointer-events: none;
 	}
@@ -188,7 +188,7 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.18em;
-		color: var(--volt);
+		color: var(--color-accent);
 		white-space: nowrap;
 	}
 
@@ -201,7 +201,7 @@
 	}
 
 	.finished .time {
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	.controls {
@@ -212,7 +212,7 @@
 
 	/* колокольчик — действие, не удаление: volt вместо дефолтного danger у icon-кнопки */
 	.controls :global(.notify-toggle) {
-		--icon-color: var(--volt);
+		--icon-color: var(--color-accent);
 	}
 
 	.bell-glyph {

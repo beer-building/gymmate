@@ -21,7 +21,7 @@
 		min-width: 0;
 		appearance: none;
 		font-family: var(--font-body);
-		color: var(--ink);
+		color: var(--color-text);
 		outline: none;
 		cursor: pointer;
 		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%238e9095' stroke-width='1.5'/%3E%3C/svg%3E");
@@ -30,13 +30,13 @@
 	}
 
 	.boxed {
-		background-color: var(--bg-sunken);
-		border: 1px solid var(--line-strong);
-		border-radius: var(--radius-sm);
+		background-color: var(--color-sunken);
+		border: 1px solid var(--color-border-strong);
+		border-radius: var(--border-radius);
 	}
 
 	.boxed:focus {
-		border-color: var(--volt);
+		border-color: var(--color-accent);
 	}
 
 	/* фиксированный line-height в rem — высоты совпадают с кнопками и инпутами */
@@ -71,18 +71,18 @@
 	.ghost {
 		background-color: transparent;
 		border: none;
-		border-bottom: 1px dashed var(--line-strong);
+		border-bottom: 1px dashed var(--color-border-strong);
 		border-radius: 0;
 		padding-inline: 0 1.625rem;
 		background-position: right 0.375rem center;
 	}
 
 	.ghost:hover:not(:focus) {
-		border-bottom-color: var(--muted);
+		border-bottom-color: var(--color-muted);
 	}
 
 	.ghost:focus {
-		border-bottom-color: var(--volt);
+		border-bottom-color: var(--color-accent);
 		border-bottom-style: solid;
 	}
 

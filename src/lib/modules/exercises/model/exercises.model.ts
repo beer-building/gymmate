@@ -1,5 +1,6 @@
 import { combine, createEffect, createEvent, createStore, sample } from 'effector';
 import * as api from '../api';
+import { findSimilarExercises } from '../helpers/find-similar';
 import type { Exercise, ExerciseKind, MuscleGroup } from '$lib/shared/types';
 
 // --- список упражнений: грузим весь каталог, фильтруем на клиенте ---
@@ -68,3 +69,17 @@ sample({
 	clock: exercisePageOpened,
 	target: loadExerciseFx
 });
+
+// для блока «похожие упражнения» нужен весь каталог; грузим один раз,
+// если он ещё не загружен и не грузится (иначе второй getFullList к той же
+// коллекции отменит уже летящий запрос каталога — автоотмена PocketBase SDK)
+sample({
+	clock: exercisePageOpened,
+	source: { items: exercises, loading: loadExercisesFx.pending },
+	filter: ({ items, loading }) => items.length === 0 && !loading,
+	target: loadExercisesFx
+});
+
+export const similarExercises = combine(currentExercise, exercises, (current, items) =>
+	current ? findSimilarExercises(current, items) : []
+);

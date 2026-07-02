@@ -89,7 +89,7 @@
 		position: absolute;
 		inset: 0;
 		border-radius: inherit;
-		box-shadow: inset 0 0 0 1px oklch(from var(--ink) l c h / 0.08);
+		box-shadow: inset 0 0 0 1px oklch(from var(--color-text) l c h / 0.08);
 		pointer-events: none;
 	}
 
@@ -102,14 +102,14 @@
 
 	.avatar.ring {
 		box-shadow:
-			0 0 0 2px var(--bg),
-			0 0 0 3px oklch(from var(--volt) l c h / 0.4);
+			0 0 0 2px var(--color-background),
+			0 0 0 3px oklch(from var(--color-accent) l c h / 0.4);
 	}
 
 	.avatar.ring:hover {
 		box-shadow:
-			0 0 0 2px var(--bg),
-			0 0 0 3px var(--volt);
+			0 0 0 2px var(--color-background),
+			0 0 0 3px var(--color-accent);
 		transform: scale(1.04);
 	}
 

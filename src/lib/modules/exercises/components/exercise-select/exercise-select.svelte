@@ -10,6 +10,7 @@
 		size?: 'sm' | 'md' | 'lg';
 		id?: string;
 		required?: boolean;
+		'aria-label'?: string;
 	};
 
 	let {

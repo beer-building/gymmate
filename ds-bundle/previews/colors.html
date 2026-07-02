@@ -1,0 +1,36 @@
+<!-- @dsCard group="Foundations" -->
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Colors</title>
+<link rel="stylesheet" href="../styles.css" />
+<style>
+	.wrap { padding: 1.75rem; }
+	.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.75rem; }
+	.sw { border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; }
+	.sw .chip-fill { height: 64px; }
+	.sw .meta { padding: 0.5rem 0.625rem; background: var(--color-surface); }
+	.sw .name { font-family: var(--font-mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.06em; }
+	.sw .val { font-family: var(--font-mono); font-size: 0.625rem; color: var(--color-muted); }
+</style>
+</head>
+<body>
+<div class="wrap container">
+	<span class="eyebrow">Foundations</span>
+	<h2 style="margin:.5rem 0 1.25rem">Colors</h2>
+	<div class="grid">
+		<div class="sw"><div class="chip-fill" style="background:var(--color-accent)"></div><div class="meta"><div class="name">Accent</div><div class="val">--color-accent</div></div></div>
+		<div class="sw"><div class="chip-fill" style="background:var(--color-text)"></div><div class="meta"><div class="name">Text</div><div class="val">--color-text</div></div></div>
+		<div class="sw"><div class="chip-fill" style="background:var(--color-background)"></div><div class="meta"><div class="name">Background</div><div class="val">--color-background</div></div></div>
+		<div class="sw"><div class="chip-fill" style="background:var(--color-surface)"></div><div class="meta"><div class="name">Surface</div><div class="val">--color-surface</div></div></div>
+		<div class="sw"><div class="chip-fill" style="background:var(--color-sunken)"></div><div class="meta"><div class="name">Sunken</div><div class="val">--color-sunken</div></div></div>
+		<div class="sw"><div class="chip-fill" style="background:var(--color-muted)"></div><div class="meta"><div class="name">Muted</div><div class="val">--color-muted</div></div></div>
+		<div class="sw"><div class="chip-fill" style="background:var(--color-error)"></div><div class="meta"><div class="name">Error</div><div class="val">--color-error</div></div></div>
+		<div class="sw"><div class="chip-fill" style="background:var(--color-muscle-primary)"></div><div class="meta"><div class="name">Muscle 1</div><div class="val">--color-muscle-primary</div></div></div>
+		<div class="sw"><div class="chip-fill" style="background:var(--color-muscle-secondary)"></div><div class="meta"><div class="name">Muscle 2</div><div class="val">--color-muscle-secondary</div></div></div>
+	</div>
+</div>
+</body>
+</html>

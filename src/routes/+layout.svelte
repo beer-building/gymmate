@@ -116,9 +116,9 @@
 		position: sticky;
 		top: 0;
 		z-index: 10;
-		background: oklch(from var(--bg) l c h / 0.78);
+		background: oklch(from var(--color-background) l c h / 0.78);
 		backdrop-filter: blur(14px) saturate(140%);
-		border-bottom: 1px solid var(--line);
+		border-bottom: 1px solid var(--color-border);
 		padding-top: var(--safe-area-top);
 	}
 
@@ -131,8 +131,8 @@
 		background: linear-gradient(
 			90deg,
 			transparent 0%,
-			oklch(from var(--volt) l c h / 0.45) 35%,
-			oklch(from var(--volt) l c h / 0.45) 65%,
+			oklch(from var(--color-accent) l c h / 0.45) 35%,
+			oklch(from var(--color-accent) l c h / 0.45) 65%,
 			transparent 100%
 		);
 		pointer-events: none;
@@ -157,14 +157,14 @@
 	}
 
 	.logo .accent {
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	.logo-mark {
 		width: 30px;
 		height: 30px;
 		object-fit: contain;
-		filter: drop-shadow(0 0 6px oklch(from var(--volt) l c h / 0.35));
+		filter: drop-shadow(0 0 6px oklch(from var(--color-accent) l c h / 0.35));
 		transition: transform 0.18s var(--spring-transition, ease);
 	}
 
@@ -193,7 +193,7 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.12em;
-		color: var(--muted);
+		color: var(--color-muted);
 		padding: 8px 14px;
 		border-radius: var(--border-radius);
 		transition: color 0.15s ease;
@@ -201,11 +201,11 @@
 	}
 
 	nav a:hover {
-		color: var(--ink);
+		color: var(--color-text);
 	}
 
 	nav a.current {
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	/* touch (планшеты с верхней навигацией): зона нажатия ссылок ≥44px */
@@ -240,18 +240,18 @@
 		align-items: center;
 		gap: 0.625rem;
 		padding: 0.25rem;
-		border-radius: var(--radius-pill);
+		border-radius: 999px;
 		transition: background 0.18s ease;
 	}
 
 	.user-link:hover {
-		background: oklch(from var(--ink) l c h / 0.04);
+		background: oklch(from var(--color-text) l c h / 0.04);
 	}
 
 	.user-name {
 		font-size: 12px;
 		font-weight: 600;
-		color: var(--muted);
+		color: var(--color-muted);
 		max-width: 140px;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -261,7 +261,7 @@
 	}
 
 	.user-link:hover .user-name {
-		color: var(--ink);
+		color: var(--color-text);
 	}
 
 	main {
@@ -270,7 +270,7 @@
 	}
 
 	footer {
-		border-top: 1px solid var(--line);
+		border-top: 1px solid var(--color-border);
 		padding-block: 24px;
 		padding-bottom: calc(24px + var(--safe-area-bottom));
 	}
@@ -283,7 +283,7 @@
 	}
 
 	footer .mono {
-		color: var(--volt);
+		color: var(--color-accent);
 		font-size: 11px;
 		letter-spacing: 0.15em;
 	}
@@ -306,10 +306,10 @@
 			bottom: 0;
 			z-index: 20;
 			display: flex;
-			background: oklch(from var(--bg) l c h / 0.82);
+			background: oklch(from var(--color-background) l c h / 0.82);
 			backdrop-filter: blur(16px) saturate(140%);
 			-webkit-backdrop-filter: blur(16px) saturate(140%);
-			border-top: 1px solid var(--line);
+			border-top: 1px solid var(--color-border);
 			padding: 0.375rem 0.5rem 0;
 			padding-bottom: max(var(--safe-area-bottom), 0.375rem);
 			transition: opacity 0.15s ease;
@@ -328,7 +328,7 @@
 			padding: 0.4375rem 0.25rem;
 			font-size: 0.625rem;
 			letter-spacing: 0.06em;
-			border-radius: var(--radius-md);
+			border-radius: var(--border-radius);
 			transition:
 				color 0.15s ease,
 				transform var(--spring-transition);

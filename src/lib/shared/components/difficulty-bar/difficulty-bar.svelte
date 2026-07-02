@@ -23,8 +23,8 @@
 	.seg {
 		flex: 1;
 		height: 0.375rem;
-		border-radius: var(--radius-pill);
-		background-color: var(--line);
+		border-radius: 999px;
+		background-color: var(--color-border);
 	}
 
 	/* каждое деление показывает свой срез общего градиента:

@@ -219,7 +219,7 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.2em;
-		color: var(--volt);
+		color: var(--color-accent);
 		margin-bottom: 16px;
 	}
 
@@ -234,7 +234,7 @@
 		justify-content: space-between;
 		gap: 14px;
 		padding-block: 8px;
-		border-bottom: 1px solid var(--line);
+		border-bottom: 1px solid var(--color-border);
 		font-size: 14px;
 	}
 
@@ -268,14 +268,14 @@
 	}
 
 	.empty .mono {
-		color: var(--volt);
+		color: var(--color-accent);
 		text-transform: uppercase;
 		letter-spacing: 0.2em;
 		font-size: 12px;
 	}
 
 	.empty a {
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	.stats {
@@ -295,7 +295,7 @@
 	.stat .value {
 		font-size: 28px;
 		font-weight: 700;
-		color: var(--volt);
+		color: var(--color-accent);
 		line-height: 1.1;
 	}
 
@@ -310,7 +310,7 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.12em;
-		color: var(--muted);
+		color: var(--color-muted);
 		margin: 0;
 	}
 
@@ -326,7 +326,7 @@
 		align-items: baseline;
 		gap: 6px 16px;
 		padding-block: 9px;
-		border-bottom: 1px solid var(--line);
+		border-bottom: 1px solid var(--color-border);
 		font-size: 14px;
 	}
 
@@ -340,7 +340,7 @@
 	}
 
 	a.record-name:hover {
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	.records .weight {
@@ -349,7 +349,7 @@
 	}
 
 	.records .weight b {
-		color: var(--volt);
+		color: var(--color-accent);
 		font-weight: 600;
 	}
 
@@ -367,7 +367,7 @@
 		list-style: none;
 		margin: 16px 0 0;
 		padding: 0;
-		border-top: 1px solid var(--line);
+		border-top: 1px solid var(--color-border);
 	}
 
 	.forgotten li {
@@ -376,7 +376,7 @@
 		align-items: baseline;
 		gap: 6px 14px;
 		padding-block: 9px;
-		border-bottom: 1px solid var(--line);
+		border-bottom: 1px solid var(--color-border);
 		font-size: 14px;
 	}
 
@@ -395,7 +395,7 @@
 	}
 
 	.forgotten .days b {
-		color: var(--volt);
+		color: var(--color-accent);
 		font-weight: 600;
 	}
 

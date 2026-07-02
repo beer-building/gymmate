@@ -58,9 +58,9 @@
 		justify-content: center;
 		gap: 10px;
 		padding: 12px 16px;
-		background: var(--bg-raised);
-		color: var(--ink);
-		border: 1px solid var(--line);
+		background: var(--color-surface);
+		color: var(--color-text);
+		border: 1px solid var(--color-border);
 		border-radius: var(--border-radius);
 		font: 600 14px var(--font-body);
 		cursor: pointer;
@@ -68,7 +68,7 @@
 	}
 
 	.google-btn:hover:not(:disabled) {
-		border-color: var(--line-strong);
+		border-color: var(--color-border-strong);
 	}
 
 	.google-btn:disabled {
@@ -80,7 +80,7 @@
 		display: flex;
 		align-items: center;
 		gap: 12px;
-		color: var(--muted);
+		color: var(--color-muted);
 		font-size: 12px;
 		text-transform: uppercase;
 		letter-spacing: 0.08em;
@@ -92,6 +92,6 @@
 		content: '';
 		flex: 1;
 		height: 1px;
-		background: var(--line);
+		background: var(--color-border);
 	}
 </style>

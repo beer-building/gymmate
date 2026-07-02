@@ -335,7 +335,7 @@
 		gap: 10px;
 		margin-bottom: 24px;
 		font-size: 13px;
-		color: var(--muted);
+		color: var(--color-muted);
 	}
 
 	.llm-notice p {
@@ -354,8 +354,8 @@
 		margin-top: -2px;
 		background: transparent;
 		border: none;
-		border-radius: var(--radius-sm);
-		color: var(--muted);
+		border-radius: var(--border-radius);
+		color: var(--color-muted);
 		cursor: pointer;
 		transition:
 			color 0.15s ease,
@@ -363,8 +363,8 @@
 	}
 
 	.llm-dismiss:hover {
-		color: var(--ink);
-		background: oklch(from var(--ink) l c h / 0.06);
+		color: var(--color-text);
+		background: oklch(from var(--color-text) l c h / 0.06);
 	}
 
 	.action-error {
@@ -386,8 +386,8 @@
 		width: 8px;
 		height: 8px;
 		border-radius: 50%;
-		background: var(--volt);
-		box-shadow: 0 0 8px oklch(from var(--volt) l c h / 0.6);
+		background: var(--color-accent);
+		box-shadow: 0 0 8px oklch(from var(--color-accent) l c h / 0.6);
 	}
 
 	.active-info {
@@ -403,7 +403,7 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.18em;
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	.active-name {
@@ -420,7 +420,7 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.12em;
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	.llm-notice p {
@@ -471,7 +471,7 @@
 		border: none;
 		padding: 0;
 		font: inherit;
-		color: var(--volt);
+		color: var(--color-accent);
 		cursor: pointer;
 		text-decoration: underline;
 	}
@@ -479,7 +479,7 @@
 	.archive {
 		background: none;
 		border: none;
-		color: var(--muted);
+		color: var(--color-muted);
 		font-size: 11px;
 		text-transform: uppercase;
 		letter-spacing: 0.1em;
@@ -489,7 +489,7 @@
 	}
 
 	.archive:hover {
-		color: var(--danger);
+		color: var(--color-error);
 	}
 
 	.program-workouts {
@@ -503,7 +503,7 @@
 		align-items: center;
 		gap: 14px;
 		padding-block: 10px;
-		border-bottom: 1px solid var(--line);
+		border-bottom: 1px solid var(--color-border);
 		font-size: 14px;
 	}
 
@@ -512,7 +512,7 @@
 	}
 
 	.program-workouts .num {
-		color: var(--volt);
+		color: var(--color-accent);
 		font-size: 12px;
 	}
 
@@ -525,7 +525,7 @@
 	}
 
 	.program-workouts .name:hover {
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	.empty {
@@ -534,14 +534,14 @@
 	}
 
 	.empty .mono {
-		color: var(--volt);
+		color: var(--color-accent);
 		text-transform: uppercase;
 		letter-spacing: 0.2em;
 		font-size: 12px;
 	}
 
 	.empty a {
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	.list {
@@ -577,7 +577,7 @@
 
 	.date {
 		font-size: 12px;
-		color: var(--volt);
+		color: var(--color-accent);
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
 	}
@@ -591,8 +591,8 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.15em;
-		color: var(--bg);
-		background: var(--volt);
+		color: var(--color-background);
+		background: var(--color-accent);
 		border-radius: var(--border-radius);
 		padding: 2px 7px;
 		margin-left: 8px;

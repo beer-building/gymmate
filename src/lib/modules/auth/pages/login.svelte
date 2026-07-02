@@ -83,7 +83,7 @@
 	}
 
 	.alt a {
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	@media (max-width: 480px) {

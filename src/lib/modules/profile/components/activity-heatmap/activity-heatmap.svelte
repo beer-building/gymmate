@@ -58,8 +58,8 @@
 	.cell {
 		aspect-ratio: 1;
 		border-radius: 2px;
-		background: var(--bg-sunken);
-		border: 1px solid var(--line);
+		background: var(--color-sunken);
+		border: 1px solid var(--color-border);
 	}
 
 	.cell.future {
@@ -68,19 +68,19 @@
 	}
 
 	.cell.level-1 {
-		background: oklch(from var(--volt) l c h / 0.35);
+		background: oklch(from var(--color-accent) l c h / 0.35);
 		border-color: transparent;
 	}
 
 	.cell.level-2 {
-		background: oklch(from var(--volt) l c h / 0.65);
+		background: oklch(from var(--color-accent) l c h / 0.65);
 		border-color: transparent;
 	}
 
 	.cell.level-3 {
-		background: var(--volt);
+		background: var(--color-accent);
 		border-color: transparent;
-		box-shadow: 0 0 8px oklch(from var(--volt) l c h / 0.5);
+		box-shadow: 0 0 8px oklch(from var(--color-accent) l c h / 0.5);
 	}
 
 	.legend {
@@ -89,7 +89,7 @@
 		gap: 5px;
 		justify-content: flex-end;
 		font-size: 10px;
-		color: var(--muted);
+		color: var(--color-muted);
 		text-transform: uppercase;
 		letter-spacing: 0.1em;
 	}

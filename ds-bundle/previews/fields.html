@@ -1,0 +1,39 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fields</title>
+<link rel="stylesheet" href="../styles.css" />
+<style>
+	.wrap { padding: 1.75rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; align-items: start; }
+	.head { grid-column: 1 / -1; }
+</style>
+</head>
+<body>
+<div class="wrap container">
+	<div class="head">
+		<span class="eyebrow">Components</span>
+		<h2 style="margin:.5rem 0 0">Fields</h2>
+	</div>
+	<div class="field">
+		<label for="w">Вес, кг</label>
+		<input id="w" class="mono" type="number" value="80" />
+	</div>
+	<div class="field">
+		<label for="r">Повторы</label>
+		<input id="r" class="mono" type="number" value="8" />
+	</div>
+	<div class="field">
+		<label for="m">Мышца</label>
+		<select id="m"><option>Грудь</option><option>Спина</option></select>
+	</div>
+	<div class="field">
+		<label for="e">Email</label>
+		<input id="e" type="email" placeholder="you@example.com" />
+		<span class="error-text">Неверный формат email</span>
+	</div>
+</div>
+</body>
+</html>

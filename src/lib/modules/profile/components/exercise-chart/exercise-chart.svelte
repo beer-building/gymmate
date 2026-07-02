@@ -280,19 +280,19 @@
 		font-size: 26px;
 		font-weight: 700;
 		font-variant-numeric: tabular-nums;
-		color: var(--ink);
+		color: var(--color-text);
 		line-height: 1.1;
 	}
 
 	.readout .value small {
 		font-size: 14px;
 		font-weight: 600;
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	.readout .date {
 		font-size: 11px;
-		color: var(--muted);
+		color: var(--color-muted);
 		text-transform: uppercase;
 		letter-spacing: 0.08em;
 	}
@@ -312,7 +312,7 @@
 	}
 
 	.grid {
-		stroke: var(--line);
+		stroke: var(--color-border);
 		stroke-width: 1;
 	}
 
@@ -320,29 +320,29 @@
 		font-family: var(--font-mono);
 		/* rem: viewBox 1:1 к пикселям, на мобильном подписи растут с базовым шрифтом */
 		font-size: 0.6875rem;
-		fill: var(--muted);
+		fill: var(--color-muted);
 	}
 
 	.line {
 		fill: none;
-		stroke: var(--volt);
+		stroke: var(--color-accent);
 		stroke-width: 2.5;
 		stroke-linejoin: round;
 		stroke-linecap: round;
 	}
 
 	.line.dim {
-		stroke: oklch(from var(--muted) l c h / 0.4);
+		stroke: oklch(from var(--color-muted) l c h / 0.4);
 	}
 
 	.crosshair {
-		stroke: var(--line-strong);
+		stroke: var(--color-border-strong);
 		stroke-width: 1;
 	}
 
 	.marker {
-		fill: var(--volt);
-		stroke: var(--bg-raised);
+		fill: var(--color-accent);
+		stroke: var(--color-surface);
 		stroke-width: 2.5;
 	}
 

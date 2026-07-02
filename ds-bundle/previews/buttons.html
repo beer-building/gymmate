@@ -1,0 +1,39 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Buttons</title>
+<link rel="stylesheet" href="../styles.css" />
+<style>
+	.wrap { padding: 1.75rem; display: flex; flex-direction: column; gap: 1.25rem; }
+	.row { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+	.tag { font-family: var(--font-mono); font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--color-muted); }
+</style>
+</head>
+<body>
+<div class="wrap container">
+	<span class="eyebrow">Components</span>
+	<h2 style="margin:.5rem 0">Buttons</h2>
+	<div class="tag">Kind</div>
+	<div class="row">
+		<button class="btn">Записать подход</button>
+		<button class="btn ghost">Пропустить</button>
+		<button class="btn danger">Удалить</button>
+		<button class="btn" disabled>Disabled</button>
+	</div>
+	<div class="tag">Size — sm / md / lg</div>
+	<div class="row">
+		<button class="btn sm">Small</button>
+		<button class="btn">Medium</button>
+		<button class="btn lg">Large</button>
+	</div>
+	<div class="tag">Icon / Icon-filled</div>
+	<div class="row">
+		<button class="btn icon" aria-label="action">＋</button>
+		<button class="btn icon-filled" aria-label="action">↺</button>
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Plates</title>
+<link rel="stylesheet" href="../styles.css" />
+<style>
+	.wrap { padding: 1.75rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; align-items: start; }
+	.head { grid-column: 1 / -1; }
+	.plate { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem; }
+	.tag { font-family: var(--font-mono); font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--color-muted); }
+</style>
+</head>
+<body>
+<div class="wrap container">
+	<div class="head">
+		<span class="eyebrow">Components</span>
+		<h2 style="margin:.5rem 0 0">Plates / Cards</h2>
+	</div>
+	<div class="plate">
+		<span class="tag">.plate</span>
+		<h3 style="font-size:1.1rem">Жим лёжа</h3>
+		<p class="mono" style="font-size:1.5rem;margin:0">80<span class="muted">кг</span> × 8</p>
+	</div>
+	<div class="plate glow">
+		<span class="tag">.plate.glow — наведи</span>
+		<h3 style="font-size:1.1rem">Приседания</h3>
+		<p class="mono" style="font-size:1.5rem;margin:0">100<span class="muted">кг</span> × 5</p>
+	</div>
+	<div class="plate volt">
+		<span class="eyebrow">Следующий подход</span>
+		<h3 style="font-size:1.1rem">Становая тяга</h3>
+		<p class="mono" style="font-size:1.5rem;margin:0">120<span class="muted">кг</span> × 3</p>
+		<button class="btn" style="margin-top:.5rem">Записать</button>
+	</div>
+</div>
+</body>
+</html>

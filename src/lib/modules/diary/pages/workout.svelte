@@ -4,7 +4,15 @@
 	import { diaryModel } from '../model';
 	import { authModel } from '$lib/modules/auth/model';
 	import { ExerciseSelect } from '$lib/modules/exercises/components/exercise-select';
-	import { formatDate, formatSetsReps, plural } from '$lib/shared/helpers/labels';
+	import { suggestStretches } from '$lib/modules/exercises/helpers/suggest-stretches';
+	import {
+		formatDate,
+		formatDurationShort,
+		formatSetsReps,
+		muscleGroupLabels,
+		plural
+	} from '$lib/shared/helpers/labels';
+	import type { Exercise } from '$lib/shared/types';
 	import { Icon } from '$lib/shared/components/icon';
 	import { Button } from '$lib/shared/components/button';
 	import { Loader } from '$lib/shared/components/loader';
@@ -23,6 +31,7 @@
 	let selectedExercise = $state('');
 	let reps = $state(10);
 	let weight = $state(0);
+	let durationSeconds = $state(60);
 	let notesDraft = $state('');
 	let notesInitialized = false;
 	// «прошлый раз» по упражнениям запрашиваем один раз на завершённый лог
@@ -48,6 +57,18 @@
 	// история по выбранному упражнению — для подсказки и автоподстановки
 	$effect(() => {
 		if (selectedExercise) diaryModel.lastSetRequested(selectedExercise);
+	});
+
+	// разминка/растяжка записываются по времени, а не весом×повторами
+	const selectedKind = $derived(
+		$allExercises.find((item) => item.id === selectedExercise)?.kind ?? 'strength'
+	);
+
+	// префилл длительности: цель из плана, иначе минута
+	$effect(() => {
+		if (!selectedExercise || selectedKind === 'strength') return;
+		const planned = $workoutPlan.find((item) => item.exercise === selectedExercise);
+		durationSeconds = planned?.target_duration_seconds || 60;
 	});
 
 	// Префилл при смене упражнения — каскад без протечки: последний подход
@@ -105,10 +126,23 @@
 		}))
 	);
 
+	// растяжки на мышцы из плана; уже записанные в лог не предлагаем
+	const stretchSuggestions = $derived.by(() => {
+		const planned = $workoutPlan
+			.map((item) => item.expand?.exercise)
+			.filter((item): item is Exercise => Boolean(item));
+		const loggedIds = new Set($logExercises.map((item) => item.exercise));
+		return suggestStretches(planned, $allExercises).filter((item) => !loggedIds.has(item.id));
+	});
+
 	function addSet(event: SubmitEvent) {
 		event.preventDefault();
 		if (!selectedExercise) return;
-		diaryModel.setAdded({ exercise: selectedExercise, reps, weight });
+		if (selectedKind === 'strength') {
+			diaryModel.setAdded({ exercise: selectedExercise, reps, weight });
+		} else {
+			diaryModel.setAdded({ exercise: selectedExercise, reps: 0, weight: 0, durationSeconds });
+		}
 	}
 
 	function quickAdd(exerciseId: string) {
@@ -173,6 +207,8 @@
 				name: group.name,
 				weight: best.weight,
 				reps: best.reps,
+				// разминка/растяжка: суммарное время вместо лучшего веса
+				duration: group.sets.reduce((sum, set) => sum + set.duration_seconds, 0),
 				// null — упражнение раньше не делали; число — было столько кг
 				prev: prev ?? null
 			};
@@ -262,18 +298,24 @@
 								{:else}
 									<span class="bd-name">{row.name}</span>
 								{/if}
-								<span class="bd-top mono"><b>{row.weight || '—'}</b> кг × {row.reps}</span>
-								<span class="bd-delta mono" class:up={delta !== null && delta > 0}>
-									{#if delta === null}
-										новое
-									{:else if delta > 0}
-										↑ {delta.toLocaleString('ru-RU')}
-									{:else if delta < 0}
-										↓ {Math.abs(delta).toLocaleString('ru-RU')}
-									{:else}
-										=
-									{/if}
-								</span>
+								{#if row.weight === 0 && row.duration > 0}
+									<!-- разминка/растяжка: время вместо веса, дельта веса не о чем -->
+									<span class="bd-top mono"><b>{formatDurationShort(row.duration)}</b></span>
+									<span class="bd-delta mono"></span>
+								{:else}
+									<span class="bd-top mono"><b>{row.weight || '—'}</b> кг × {row.reps}</span>
+									<span class="bd-delta mono" class:up={delta !== null && delta > 0}>
+										{#if delta === null}
+											новое
+										{:else if delta > 0}
+											↑ {delta.toLocaleString('ru-RU')}
+										{:else if delta < 0}
+											↓ {Math.abs(delta).toLocaleString('ru-RU')}
+										{:else}
+											=
+										{/if}
+									</span>
+								{/if}
 							</li>
 						{/each}
 					</ul>
@@ -302,7 +344,13 @@
 								{/if}
 								<!-- целевой вес виден прямо в плане: его не нужно вспоминать со сбитым дыханием -->
 								<span class="mono muted">
-									{formatSetsReps(item)}{item.target_weight ? ` · ${item.target_weight} кг` : ''}
+									{#if (item.expand?.exercise?.kind ?? 'strength') !== 'strength'}
+										{item.target_duration_seconds
+											? formatDurationShort(item.target_duration_seconds)
+											: '—'}
+									{:else}
+										{formatSetsReps(item)}{item.target_weight ? ` · ${item.target_weight} кг` : ''}
+									{/if}
 								</span>
 								<!-- «Выбрать», не «Записать подход»: кнопка подставляет упражнение
 								     и цели в форму, а не записывает подход -->
@@ -331,14 +379,28 @@
 							required
 						/>
 					</div>
-					<div class="field">
-						<label for="reps">Повторы</label>
-						<input id="reps" type="number" min="1" bind:value={reps} required />
-					</div>
-					<div class="field">
-						<label for="weight">Вес, кг</label>
-						<input id="weight" type="number" min="0" step="0.5" bind:value={weight} />
-					</div>
+					{#if selectedKind === 'strength'}
+						<div class="field">
+							<label for="reps">Повторы</label>
+							<input id="reps" type="number" min="1" bind:value={reps} required />
+						</div>
+						<div class="field">
+							<label for="weight">Вес, кг</label>
+							<input id="weight" type="number" min="0" step="0.5" bind:value={weight} />
+						</div>
+					{:else}
+						<div class="field">
+							<label for="duration">Время, с</label>
+							<input
+								id="duration"
+								type="number"
+								min="5"
+								step="5"
+								bind:value={durationSeconds}
+								required
+							/>
+						</div>
+					{/if}
 					<Button
 						kind="icon-filled"
 						class="submit-set"
@@ -349,7 +411,7 @@
 						<Icon name="plus" />
 					</Button>
 				</form>
-				{#if $lastSet?.set && $lastSet.exerciseId === selectedExercise}
+				{#if $lastSet?.set && $lastSet.exerciseId === selectedExercise && selectedKind === 'strength'}
 					<p class="last-hint mono">
 						в прошлый раз: <b>{$lastSet.set.weight || 0} кг × {$lastSet.set.reps}</b>
 						· {formatDate($lastSet.set.created)}
@@ -378,8 +440,12 @@
 					{#each group.sets as set, i (set.id)}
 						<div class="set mono">
 							<span class="n">#{i + 1}</span>
-							<span><b>{set.reps}</b> повт.</span>
-							<span><b>{set.weight || '—'}</b> кг</span>
+							{#if set.duration_seconds}
+								<span class="span-2"><b>{formatDurationShort(set.duration_seconds)}</b></span>
+							{:else}
+								<span><b>{set.reps}</b> повт.</span>
+								<span><b>{set.weight || '—'}</b> кг</span>
+							{/if}
 							<Button
 								kind="icon"
 								onclick={() => diaryModel.setDeleted(set.id)}
@@ -393,6 +459,29 @@
 				</div>
 			</section>
 		{/each}
+
+		{#if !log.completed_at && stretchSuggestions.length > 0}
+			<!-- растяжка в конце: подбор по мышцам, задействованным в плане тренировки -->
+			<section class="plate block">
+				<h2 class="mono label">Растяжка на сегодня</h2>
+				<ul class="plan">
+					{#each stretchSuggestions as stretch (stretch.id)}
+						<li>
+							<a
+								href="/exercises/{stretch.id}?ref={page.url.pathname}"
+								class="plan-name exercise-link"
+							>
+								{stretch.name}
+							</a>
+							<span class="mono muted">
+								{stretch.primary_muscles.map((muscle) => muscleGroupLabels[muscle]).join(' · ')}
+							</span>
+							<Button kind="ghost" size="sm" onclick={() => quickAdd(stretch.id)}>Выбрать</Button>
+						</li>
+					{/each}
+				</ul>
+			</section>
+		{/if}
 
 		<section class="plate block">
 			<h2 class="mono label">Заметки</h2>
@@ -419,13 +508,13 @@
 		align-items: center;
 		gap: 6px;
 		font-size: 12px;
-		color: var(--muted);
+		color: var(--color-muted);
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
 	}
 
 	.back:hover {
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	header {
@@ -440,7 +529,7 @@
 
 	.stats {
 		font-size: 12px;
-		color: var(--muted);
+		color: var(--color-muted);
 		display: flex;
 		align-items: center;
 		flex-wrap: wrap;
@@ -448,16 +537,16 @@
 	}
 
 	.stats b {
-		color: var(--volt);
+		color: var(--color-accent);
 		font-weight: 600;
 	}
 
 	.dot {
-		color: var(--line-strong);
+		color: var(--color-border-strong);
 	}
 
 	.done-mark {
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	.block {
@@ -473,14 +562,14 @@
 		flex-wrap: wrap;
 		gap: 8px 12px;
 		font-size: 13px;
-		color: var(--muted);
+		color: var(--color-muted);
 	}
 
 	/* цифры — герой: крупные, моноширинные, volt */
 	.summary .total b {
 		font-size: 22px;
 		font-weight: 700;
-		color: var(--volt);
+		color: var(--color-accent);
 		font-variant-numeric: tabular-nums;
 	}
 
@@ -488,7 +577,7 @@
 		list-style: none;
 		margin: 18px 0 0;
 		padding: 16px 0 0;
-		border-top: 1px solid var(--line);
+		border-top: 1px solid var(--color-border);
 		display: flex;
 		flex-direction: column;
 	}
@@ -510,11 +599,11 @@
 	.bd-top {
 		font-size: 13px;
 		white-space: nowrap;
-		color: var(--muted);
+		color: var(--color-muted);
 	}
 
 	.bd-top b {
-		color: var(--ink);
+		color: var(--color-text);
 		font-weight: 600;
 	}
 
@@ -525,13 +614,13 @@
 		font-weight: 600;
 		letter-spacing: 0.04em;
 		white-space: nowrap;
-		color: var(--muted);
+		color: var(--color-muted);
 		min-width: 3.5rem;
 		text-align: right;
 	}
 
 	.bd-delta.up {
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	.summary-empty {
@@ -547,7 +636,7 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.2em;
-		color: var(--volt);
+		color: var(--color-accent);
 		margin-bottom: 16px;
 	}
 
@@ -565,7 +654,7 @@
 		align-items: center;
 		gap: 6px 14px;
 		padding-block: 10px;
-		border-bottom: 1px solid var(--line);
+		border-bottom: 1px solid var(--color-border);
 		font-size: 14px;
 	}
 
@@ -594,7 +683,7 @@
 	}
 
 	a.exercise-link:hover {
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	form {
@@ -612,7 +701,7 @@
 	/* 45px — высота md-инпутов формы; .btn.icon-filled в селекторе — чтобы
 	   перебить размеры из самого компонента кнопки */
 	form :global(.btn.icon-filled.submit-set) {
-		--icon-color: var(--volt);
+		--icon-color: var(--color-accent);
 		width: 45px;
 		height: 45px;
 	}
@@ -620,13 +709,13 @@
 	.last-hint {
 		margin: 12px 0 0;
 		font-size: 11px;
-		color: var(--muted);
+		color: var(--color-muted);
 		text-transform: uppercase;
 		letter-spacing: 0.08em;
 	}
 
 	.last-hint b {
-		color: var(--volt);
+		color: var(--color-accent);
 		font-weight: 600;
 	}
 
@@ -649,7 +738,7 @@
 	}
 
 	.group-head a:hover {
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	.group-head .mono {
@@ -669,18 +758,23 @@
 		gap: 12px;
 		align-items: center;
 		font-size: 13px;
-		background: var(--bg-sunken);
-		border: 1px solid var(--line);
+		background: var(--color-sunken);
+		border: 1px solid var(--color-border);
 		border-radius: var(--border-radius);
 		padding: 9px 14px;
 	}
 
 	.set .n {
-		color: var(--muted);
+		color: var(--color-muted);
+	}
+
+	/* запись по времени занимает обе колонки повторов/веса */
+	.set .span-2 {
+		grid-column: span 2;
 	}
 
 	.set b {
-		color: var(--volt);
+		color: var(--color-accent);
 		font-weight: 600;
 	}
 

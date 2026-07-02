@@ -16,13 +16,13 @@
 		width: 100%;
 		min-width: 0;
 		font-family: var(--font-body);
-		color: var(--ink);
+		color: var(--color-text);
 		outline: none;
 		transition: border-color 0.15s ease;
 	}
 
 	.input::placeholder {
-		color: var(--muted);
+		color: var(--color-muted);
 		opacity: 1;
 	}
 
@@ -62,13 +62,13 @@
 	}
 
 	.boxed {
-		background: var(--bg-sunken);
-		border: 1px solid var(--line-strong);
-		border-radius: var(--radius-sm);
+		background: var(--color-sunken);
+		border: 1px solid var(--color-border-strong);
+		border-radius: var(--border-radius);
 	}
 
 	.boxed:focus {
-		border-color: var(--volt);
+		border-color: var(--color-accent);
 	}
 
 	/* фиксированный line-height в rem — высоты совпадают с кнопками и селектами */
@@ -114,17 +114,17 @@
 	.ghost {
 		background: transparent;
 		border: none;
-		border-bottom: 1px dashed var(--line-strong);
+		border-bottom: 1px dashed var(--color-border-strong);
 		border-radius: 0;
 		padding-inline: 0;
 	}
 
 	.ghost:hover:not(:focus) {
-		border-bottom-color: var(--muted);
+		border-bottom-color: var(--color-muted);
 	}
 
 	.ghost:focus {
-		border-bottom-color: var(--volt);
+		border-bottom-color: var(--color-accent);
 		border-bottom-style: solid;
 	}
 

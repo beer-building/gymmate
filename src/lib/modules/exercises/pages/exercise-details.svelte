@@ -10,6 +10,7 @@
 
 	const currentExercise = exercisesModel.currentExercise;
 	const exerciseError = exercisesModel.exerciseError;
+	const similar = exercisesModel.similarExercises;
 	const gender = authModel.gender;
 
 	$effect(() => {
@@ -43,7 +44,9 @@
 
 		<header class="rise">
 			<div class="head-text">
-				<p class="eyebrow">// {item.primary_muscles.map((m) => muscleGroupLabels[m]).join(' · ')}</p>
+				<p class="eyebrow">
+					// {item.primary_muscles.map((m) => muscleGroupLabels[m]).join(' · ')}
+				</p>
 				<h1>{item.name}</h1>
 				<div class="chips">
 					<span class="chip static">{equipmentLabels[item.equipment]}</span>
@@ -89,6 +92,25 @@
 				</div>
 			</section>
 		{/if}
+
+		{#if $similar.length}
+			<section class="similar-section rise" style="animation-delay: 0.28s">
+				<h2 class="mono">Похожие упражнения</h2>
+				<div class="similar">
+					{#each $similar as ex (ex.id)}
+						<a href="/exercises/{ex.id}?ref={page.url.pathname}" class="sim-card plate">
+							<span class="sim-group mono"
+								>{ex.primary_muscles.map((m) => muscleGroupLabels[m]).join(' · ')}</span
+							>
+							<span class="sim-name">{ex.name}</span>
+							<span class="sim-meta mono"
+								>{equipmentLabels[ex.equipment]} · {difficultyLabels[ex.difficulty]}</span
+							>
+						</a>
+					{/each}
+				</div>
+			</section>
+		{/if}
 	{/if}
 </div>
 
@@ -102,13 +124,13 @@
 		align-items: center;
 		gap: 6px;
 		font-size: 12px;
-		color: var(--muted);
+		color: var(--color-muted);
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
 	}
 
 	.back:hover {
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	header {
@@ -117,10 +139,6 @@
 		grid-template-columns: 1fr 220px;
 		gap: 24px;
 		align-items: center;
-	}
-
-	.head-map {
-		opacity: 0.9;
 	}
 
 	h1 {
@@ -146,7 +164,7 @@
 
 	.chip.static {
 		cursor: default;
-		color: var(--ink);
+		color: var(--color-text);
 	}
 
 	.block {
@@ -160,14 +178,14 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.2em;
-		color: var(--muted);
+		color: var(--color-muted);
 		margin-bottom: 12px;
 	}
 
 	/* акцентная рамка и заливка — общий .plate.volt из app.css */
 
 	.block.volt h2 {
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	.videos {
@@ -180,9 +198,9 @@
 	.videos video {
 		width: 100%;
 		aspect-ratio: 16 / 9;
-		border: 1px solid var(--line);
+		border: 1px solid var(--color-border);
 		border-radius: var(--border-radius);
-		background: var(--bg-sunken);
+		background: var(--color-sunken);
 	}
 
 	@media (max-width: 560px) {
@@ -192,6 +210,70 @@
 
 		.videos {
 			grid-template-columns: 1fr;
+		}
+	}
+
+	.similar-section {
+		margin-bottom: 14px;
+	}
+
+	.similar-section h2 {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.2em;
+		color: var(--color-muted);
+		margin-bottom: 12px;
+	}
+
+	.similar {
+		display: flex;
+		gap: 12px;
+		overflow-x: auto;
+		scroll-snap-type: x proximity;
+		-webkit-overflow-scrolling: touch;
+		/* запас сверху под подъём карточки при hover (translateY) — иначе обрезается;
+		   снизу без padding, чтобы скроллбар был вровень с низом контейнера */
+		padding-top: 6px;
+	}
+
+	.sim-card {
+		flex: 0 0 220px;
+		scroll-snap-align: start;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		padding: 14px;
+		text-decoration: none;
+	}
+
+	.sim-group {
+		font-size: 11px;
+		color: var(--color-accent);
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+	}
+
+	.sim-name {
+		font-size: 15px;
+		font-weight: 600;
+		color: var(--color-text);
+	}
+
+	.sim-meta {
+		font-size: 11px;
+		color: var(--color-muted);
+		margin-top: auto;
+	}
+
+	@media (max-width: 640px) {
+		/* скролл во всю ширину экрана (за padding контейнера);
+		   snap прилипает с отступом 16px слева — первая карточка не липнет к краю */
+		.similar {
+			margin: 0 -15px;
+			padding-bottom: 16px;
+			scroll-padding-left: 16px;
 		}
 	}
 </style>

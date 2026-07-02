@@ -52,10 +52,10 @@
 		/* текст кнопки никогда не переносится на вторую строку */
 		white-space: nowrap;
 		padding: 0.75rem 1.375rem;
-		border-radius: var(--radius-sm);
-		border: 1px solid var(--volt);
-		background: var(--volt);
-		color: var(--bg);
+		border-radius: var(--border-radius);
+		border: 1px solid var(--color-accent);
+		background: var(--color-accent);
+		color: var(--color-background);
 		cursor: pointer;
 		-webkit-tap-highlight-color: transparent;
 		transition:
@@ -71,7 +71,7 @@
 
 	.btn:hover {
 		background: transparent;
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	.btn:disabled {
@@ -81,23 +81,23 @@
 
 	.btn.ghost {
 		background: transparent;
-		border-color: var(--line-strong);
-		color: var(--ink);
+		border-color: var(--color-border-strong);
+		color: var(--color-text);
 	}
 
 	.btn.ghost:hover {
-		border-color: var(--volt);
-		color: var(--volt);
+		border-color: var(--color-accent);
+		color: var(--color-accent);
 	}
 
 	.btn.danger {
 		background: transparent;
-		border-color: var(--line-strong);
-		color: var(--danger);
+		border-color: var(--color-border-strong);
+		color: var(--color-error);
 	}
 
 	.btn.danger:hover {
-		border-color: var(--danger);
+		border-color: var(--color-error);
 	}
 
 	.btn.sm {
@@ -119,8 +119,8 @@
 		padding: 0;
 		background: transparent;
 		border: none;
-		border-radius: var(--radius-sm);
-		color: var(--icon-color, var(--muted));
+		border-radius: var(--border-radius);
+		color: var(--icon-color, var(--color-muted));
 		letter-spacing: 0;
 		text-transform: none;
 		flex-shrink: 0;
@@ -128,8 +128,8 @@
 
 	.btn.icon:hover,
 	.btn.icon:focus-visible {
-		background: oklch(from var(--icon-color, var(--danger)) l c h / 0.14);
-		color: var(--icon-color, var(--danger));
+		background: oklch(from var(--icon-color, var(--color-error)) l c h / 0.14);
+		color: var(--icon-color, var(--color-error));
 	}
 
 	/* квадратная иконка с постоянной заливкой; цвет — через --icon-color, по умолчанию нейтральный */
@@ -137,18 +137,18 @@
 		width: 2rem;
 		height: 2rem;
 		padding: 0;
-		background: oklch(from var(--icon-color, var(--ink)) l c h / 0.1);
+		background: oklch(from var(--icon-color, var(--color-text)) l c h / 0.1);
 		border: none;
-		border-radius: var(--radius-sm);
-		color: var(--icon-color, var(--ink));
+		border-radius: var(--border-radius);
+		color: var(--icon-color, var(--color-text));
 		letter-spacing: 0;
 		text-transform: none;
 		flex-shrink: 0;
 	}
 
 	.btn.icon-filled:hover {
-		background: oklch(from var(--icon-color, var(--ink)) l c h / 0.2);
-		color: var(--icon-color, var(--ink));
+		background: oklch(from var(--icon-color, var(--color-text)) l c h / 0.2);
+		color: var(--icon-color, var(--color-text));
 	}
 
 	/* touch: зона нажатия ≥44px без роста визуала (sm и icon-кнопки меньше 44px) */

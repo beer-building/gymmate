@@ -81,9 +81,9 @@
 		margin-bottom: 0.875rem;
 		animation-delay: 0.04s;
 		padding: var(--track-pad);
-		background: var(--bg-sunken);
-		border: 1px solid var(--line);
-		border-radius: var(--radius-md);
+		background: var(--color-sunken);
+		border: 1px solid var(--color-border);
+		border-radius: var(--border-radius);
 		/* на узких экранах вкладки скроллятся, а не ломают сетку */
 		overflow-x: auto;
 	}
@@ -93,9 +93,9 @@
 		left: 0;
 		top: var(--track-pad);
 		bottom: var(--track-pad);
-		background: var(--bg-raised);
-		border: 1px solid var(--line-strong);
-		border-radius: var(--radius-sm);
+		background: var(--color-surface);
+		border: 1px solid var(--color-border-strong);
+		border-radius: var(--border-radius);
 		box-shadow: 0 2px 8px -2px rgb(0 0 0 / 0.35);
 		opacity: 0;
 	}
@@ -117,37 +117,37 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.12em;
-		color: var(--muted);
+		color: var(--color-muted);
 		background: transparent;
 		border: 0;
-		border-radius: var(--radius-sm);
+		border-radius: var(--border-radius);
 		padding: 0.5rem 1rem;
 		cursor: pointer;
 		transition: color 0.15s ease;
 	}
 
 	.tab:hover {
-		color: var(--ink);
+		color: var(--color-text);
 	}
 
 	.tab.active {
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	/* sm — компактный pill-вариант */
 	.tabs.sm {
 		--track-pad: 0.125rem;
-		border-radius: var(--radius-pill);
+		border-radius: 999px;
 	}
 
 	.tabs.sm .thumb {
-		border-radius: var(--radius-pill);
+		border-radius: 999px;
 	}
 
 	.tabs.sm .tab {
 		font-size: 0.6875rem;
 		padding: 0.3125rem 0.75rem;
-		border-radius: var(--radius-pill);
+		border-radius: 999px;
 	}
 
 	/* touch: вкладки ниже 44px — добиваем зону нажатия по вертикали

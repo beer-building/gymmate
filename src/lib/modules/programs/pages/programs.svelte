@@ -91,8 +91,8 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.12em;
-		color: var(--bg);
-		background: var(--volt);
+		color: var(--color-background);
+		background: var(--color-accent);
 		padding: 6px 10px;
 		border-radius: var(--border-radius);
 	}
@@ -123,7 +123,7 @@
 	.num {
 		font-size: 34px;
 		font-weight: 600;
-		color: var(--volt);
+		color: var(--color-accent);
 		line-height: 1;
 	}
 
@@ -131,7 +131,7 @@
 		font-size: 10px;
 		text-transform: uppercase;
 		letter-spacing: 0.2em;
-		color: var(--muted);
+		color: var(--color-muted);
 	}
 
 	.facts :global(.bar) {

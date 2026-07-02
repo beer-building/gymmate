@@ -118,13 +118,13 @@
 		align-items: center;
 		gap: 6px;
 		font-size: 12px;
-		color: var(--muted);
+		color: var(--color-muted);
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
 	}
 
 	.back:hover {
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	header {
@@ -156,7 +156,7 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.12em;
-		color: var(--muted);
+		color: var(--color-muted);
 	}
 
 	.difficulty :global(.bar) {
@@ -182,7 +182,7 @@
 	}
 
 	.day-num {
-		color: var(--volt);
+		color: var(--color-accent);
 		font-size: 14px;
 		margin-right: 6px;
 	}
@@ -198,16 +198,16 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.18em;
-		color: var(--muted);
+		color: var(--color-muted);
 		text-align: left;
 		padding: 8px 12px;
-		border-bottom: 1px solid var(--line);
+		border-bottom: 1px solid var(--color-border);
 		white-space: nowrap;
 	}
 
 	td {
 		padding: 12px;
-		border-bottom: 1px solid var(--line);
+		border-bottom: 1px solid var(--color-border);
 		font-size: 14px;
 	}
 
@@ -220,7 +220,7 @@
 	}
 
 	.exercise-link:hover {
-		color: var(--volt);
+		color: var(--color-accent);
 	}
 
 	@media (max-width: 600px) {

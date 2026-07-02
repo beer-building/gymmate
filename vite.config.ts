@@ -4,8 +4,15 @@ import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
 import adapter from '@sveltejs/adapter-static';
 import { sveltekit } from '@sveltejs/kit/vite';
+import browserslist from 'browserslist';
+import { browserslistToTargets } from 'lightningcss';
+
+const targets = browserslistToTargets(browserslist());
 
 export default defineConfig({
+	// Lightning CSS сам проставляет вендорные префиксы по browserslist (поле в package.json).
+	css: { transformer: 'lightningcss', lightningcss: { targets } },
+	build: { cssMinify: 'lightningcss' },
 	plugins: [
 		sveltekit({
 			compilerOptions: {

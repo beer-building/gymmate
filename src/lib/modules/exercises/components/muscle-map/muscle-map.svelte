@@ -107,16 +107,12 @@
 	/* heatmap-палитра — единый источник для путей и легенды */
 	.map.heatmap,
 	.legend {
-		--level-1: oklch(from var(--volt) l c h / 0.35);
-		--level-2: oklch(from var(--volt) l c h / 0.65);
-		--level-3: var(--volt);
+		--level-1: oklch(from var(--color-accent) l c h / 0.35);
+		--level-2: oklch(from var(--color-accent) l c h / 0.65);
+		--level-3: var(--color-accent);
 	}
 
 	.map {
-		/* подсветка мышц (select-режим): жёлтый наследует l/c красного,
-		   отличается только hue → одинаковая яркость и насыщенность */
-		--primary: oklch(0.53 0.2 27.61);
-		--secondary: oklch(from var(--primary) calc(l + 0.13) c 90);
 		display: flex;
 		gap: 16px;
 		justify-content: center;
@@ -139,7 +135,7 @@
 		font-size: 10px;
 		text-transform: uppercase;
 		letter-spacing: 0.2em;
-		color: var(--muted);
+		color: var(--color-muted);
 		margin-top: 8px;
 	}
 
@@ -153,8 +149,10 @@
 		}
 	}
 
+	/* силуэт — один тон от текста с разной альфой: одинаково читается на фоне
+	   и на карточке в обеих темах (мышцы чуть плотнее частей тела) */
 	.muscle {
-		fill: var(--line);
+		fill: oklch(from var(--color-text) l c h / 0.14);
 		transition:
 			fill 0.15s ease,
 			filter 0.15s ease;
@@ -167,8 +165,8 @@
 	}
 
 	.muscle.bodypart {
-		fill: var(--bg-sunken);
-		stroke: var(--line);
+		fill: oklch(from var(--color-text) l c h / 0.07);
+		stroke: oklch(from var(--color-text) l c h / 0.12);
 		stroke-width: 1;
 	}
 
@@ -177,18 +175,18 @@
 	}
 
 	.interactive .muscle:not(.bodypart):not(.active):hover {
-		fill: oklch(from var(--primary) l c h / 0.55);
+		fill: oklch(from var(--color-muscle-primary) l c h / 0.55);
 	}
 
 	.muscle.active {
-		fill: var(--primary);
-		filter: drop-shadow(0 0 3px oklch(from var(--primary) l c h / 0.7));
+		fill: var(--color-muscle-primary);
+		filter: drop-shadow(0 0 3px oklch(from var(--color-muscle-primary) l c h / 0.7));
 	}
 
 	/* вторичные мышцы — жёлтым, тише основной подсветки */
 	.muscle.secondary:not(.bodypart) {
-		fill: var(--secondary);
-		filter: drop-shadow(0 0 3px oklch(from var(--secondary) l c h / 0.5));
+		fill: var(--color-muscle-secondary);
+		filter: drop-shadow(0 0 3px oklch(from var(--color-muscle-secondary) l c h / 0.5));
 	}
 
 	.heatmap .muscle.level-1:not(.bodypart) {
@@ -201,7 +199,7 @@
 
 	.heatmap .muscle.level-3:not(.bodypart) {
 		fill: var(--level-3);
-		filter: drop-shadow(0 0 3px oklch(from var(--volt) l c h / 0.45));
+		filter: drop-shadow(0 0 3px oklch(from var(--color-accent) l c h / 0.45));
 	}
 
 	.legend {
@@ -210,7 +208,7 @@
 		gap: 5px;
 		justify-content: flex-end;
 		font-size: 10px;
-		color: var(--muted);
+		color: var(--color-muted);
 		text-transform: uppercase;
 		letter-spacing: 0.1em;
 		margin-top: 14px;
@@ -220,8 +218,8 @@
 		width: 10px;
 		height: 10px;
 		border-radius: 2px;
-		background: var(--bg-sunken);
-		border: 1px solid var(--line);
+		background: var(--color-sunken);
+		border: 1px solid var(--color-border);
 	}
 
 	.legend .dot.level-1 {

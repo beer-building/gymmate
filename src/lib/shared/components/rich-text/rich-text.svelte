@@ -44,14 +44,14 @@
 	}
 
 	.rich-text :global(a) {
-		color: var(--volt);
+		color: var(--color-accent);
 		text-decoration: underline;
 		text-underline-offset: 2px;
 	}
 
 	.rich-text :global(code) {
-		background: var(--bg-sunken);
-		border: 1px solid var(--line);
+		background: var(--color-sunken);
+		border: 1px solid var(--color-border);
 		border-radius: var(--border-radius);
 		padding: 0.1em 0.3em;
 		font-family: var(--font-mono);
@@ -59,8 +59,8 @@
 	}
 
 	.rich-text :global(pre) {
-		background: var(--bg-sunken);
-		border: 1px solid var(--line);
+		background: var(--color-sunken);
+		border: 1px solid var(--color-border);
 		border-radius: var(--border-radius);
 		padding: 12px;
 		overflow: auto;
@@ -75,7 +75,7 @@
 	.rich-text :global(blockquote) {
 		margin: 0 0 0.75em;
 		padding: 8px 12px;
-		border-left: 3px solid var(--line-strong);
-		color: var(--muted);
+		border-left: 3px solid var(--color-border-strong);
+		color: var(--color-muted);
 	}
 </style>

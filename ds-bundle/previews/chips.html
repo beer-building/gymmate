@@ -1,0 +1,30 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Chips</title>
+<link rel="stylesheet" href="../styles.css" />
+<style>
+	.wrap { padding: 1.75rem; display: flex; flex-direction: column; gap: 1rem; }
+	.row { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+	.tag { font-family: var(--font-mono); font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--color-muted); }
+</style>
+</head>
+<body>
+<div class="wrap container">
+	<span class="eyebrow">Components</span>
+	<h2 style="margin:.5rem 0">Chips</h2>
+	<div class="tag">Фильтры каталога — default / active</div>
+	<div class="row">
+		<button class="chip active">Все</button>
+		<button class="chip">Грудь</button>
+		<button class="chip">Спина</button>
+		<button class="chip">Ноги</button>
+		<button class="chip">Плечи</button>
+		<button class="chip">Руки</button>
+	</div>
+</div>
+</body>
+</html>

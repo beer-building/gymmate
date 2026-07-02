@@ -1,5 +1,6 @@
 import { createEffect, createEvent, createStore, sample } from 'effector';
 import * as api from '../api';
+import { applyReorder } from '../helpers/reorder';
 import { getExercises } from '$lib/modules/exercises/api';
 import type {
 	Exercise,
@@ -191,3 +192,22 @@ sample({ clock: exerciseRemoved, target: deleteExerciseFx });
 editorExercises.on(deleteExerciseFx.doneData, (exercises, id) =>
 	exercises.filter((item) => item.id !== id)
 );
+
+// --- порядок упражнений (drag & drop) ---
+
+export const exercisesReordered = createEvent<{ workoutId: string; orderedIds: string[] }>();
+
+editorExercises.on(exercisesReordered, (exercises, { orderedIds }) =>
+	applyReorder(exercises, orderedIds)
+);
+
+export const persistReorderFx = createEffect((orderedIds: string[]) =>
+	// ponytail: пишем весь список тренировки, а не diff — reorder редок, список короткий,
+	// а запросы сериализуются (serialize в api) и не отменяют друг друга. Горячо станет —
+	// слать только сдвинувшиеся или через PocketBase batch API.
+	Promise.all(
+		orderedIds.map((id, index) => api.updateUserProgramWorkoutExercise(id, { order_index: index }))
+	)
+);
+
+sample({ clock: exercisesReordered, fn: ({ orderedIds }) => orderedIds, target: persistReorderFx });

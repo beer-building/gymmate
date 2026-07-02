@@ -321,7 +321,7 @@
 	.person-info .params {
 		font-size: 11px;
 		margin: 2px 0 0;
-		color: var(--volt);
+		color: var(--color-accent);
 		text-transform: uppercase;
 		letter-spacing: 0.08em;
 	}
@@ -363,7 +363,7 @@
 		justify-content: center;
 		border-radius: 50%;
 		background: oklch(0 0 0 / 0.55);
-		color: var(--volt);
+		color: var(--color-accent);
 		opacity: 0;
 		transition: opacity 0.18s ease;
 	}
@@ -397,7 +397,7 @@
 		align-self: flex-start;
 		background: none;
 		border: none;
-		color: var(--danger);
+		color: var(--color-error);
 		font-family: var(--font-mono);
 		font-size: 11px;
 		text-transform: uppercase;

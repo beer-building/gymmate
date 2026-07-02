@@ -72,8 +72,8 @@
 
 	.outline {
 		color: transparent;
-		-webkit-text-stroke: 2px var(--volt);
-		filter: drop-shadow(0 0 18px oklch(from var(--volt) l c h / 0.35));
+		-webkit-text-stroke: 2px var(--color-accent);
+		filter: drop-shadow(0 0 18px oklch(from var(--color-accent) l c h / 0.35));
 	}
 
 	.lead {
@@ -116,7 +116,7 @@
 	}
 
 	.tag {
-		color: var(--volt);
+		color: var(--color-accent);
 		font-size: 12px;
 		position: relative;
 		z-index: 1;
@@ -132,7 +132,7 @@
 		font-size: 140px;
 		line-height: 1;
 		color: transparent;
-		-webkit-text-stroke: 1px oklch(from var(--volt) l c h / 0.12);
+		-webkit-text-stroke: 1px oklch(from var(--color-accent) l c h / 0.12);
 		pointer-events: none;
 		transition:
 			-webkit-text-stroke-color 0.3s ease,
@@ -140,7 +140,7 @@
 	}
 
 	.card:hover::after {
-		-webkit-text-stroke-color: oklch(from var(--volt) l c h / 0.3);
+		-webkit-text-stroke-color: oklch(from var(--color-accent) l c h / 0.3);
 		transform: translate(-4px, 4px);
 	}
 
@@ -149,7 +149,7 @@
 		right: 20px;
 		bottom: 16px;
 		font-size: 20px;
-		color: var(--volt);
+		color: var(--color-accent);
 		transition: transform 0.18s ease;
 	}
 

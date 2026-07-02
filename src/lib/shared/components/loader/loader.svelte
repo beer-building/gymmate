@@ -59,7 +59,7 @@
 			height: 100%;
 		}
 		& svg path {
-			fill: var(--volt);
+			fill: var(--color-accent);
 		}
 	}
 
