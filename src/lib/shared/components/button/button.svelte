@@ -157,6 +157,13 @@
 			position: relative;
 		}
 
+		/* текстовые кнопки растут по-настоящему: инпуты/селекты на таче имеют
+		   min-height 2.75rem, и ряды «контрол + кнопка» иначе разъезжаются.
+		   icon-кнопки остаются компактными — им хватает невидимой зоны ::after */
+		.btn:not(.icon):not(.icon-filled) {
+			min-height: 2.75rem;
+		}
+
 		.btn::after {
 			content: '';
 			position: absolute;
