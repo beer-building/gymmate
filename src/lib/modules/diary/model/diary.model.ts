@@ -293,7 +293,12 @@ sample({ clock: workoutPageOpened, target: loadAllExercisesFx });
 
 // --- подходы ---
 
-export const setAdded = createEvent<{ exercise: string; reps: number; weight: number }>();
+export const setAdded = createEvent<{
+	exercise: string;
+	reps: number;
+	weight: number;
+	durationSeconds?: number;
+}>();
 
 export const addSetFx = createEffect(
 	async ({
@@ -303,7 +308,8 @@ export const addSetFx = createEffect(
 		exerciseId,
 		exerciseName,
 		reps,
-		weight
+		weight,
+		durationSeconds
 	}: {
 		log: WorkoutLog;
 		exercises: WorkoutLogExercise[];
@@ -312,6 +318,7 @@ export const addSetFx = createEffect(
 		exerciseName: string;
 		reps: number;
 		weight: number;
+		durationSeconds?: number;
 	}) => {
 		let logExercise = exercises.find((item) => item.exercise === exerciseId);
 		let createdExercise: WorkoutLogExercise | null = null;
@@ -329,6 +336,7 @@ export const addSetFx = createEffect(
 			set_index: sets.filter((item) => item.workout_log_exercise === logExercise.id).length + 1,
 			reps,
 			weight,
+			duration_seconds: durationSeconds ?? 0,
 			completed: true
 		});
 		return { exercise: createdExercise, set };
@@ -344,14 +352,15 @@ sample({
 		catalog: allExercises
 	},
 	filter: ({ log }) => log !== null,
-	fn: ({ log, exercises, sets, catalog }, { exercise, reps, weight }) => ({
+	fn: ({ log, exercises, sets, catalog }, { exercise, reps, weight, durationSeconds }) => ({
 		log: log!,
 		exercises,
 		sets,
 		exerciseId: exercise,
 		exerciseName: catalog.find((item) => item.id === exercise)?.name ?? 'Упражнение',
 		reps,
-		weight
+		weight,
+		durationSeconds
 	}),
 	target: addSetFx
 });
@@ -473,11 +482,11 @@ restTimer.watch((timer) => {
 
 // после записанного подхода отдых стартует сам; длительность — из плана
 // упражнения, если оно там есть. На завершённой тренировке (правка задним
-// числом) таймер не нужен.
+// числом) таймер не нужен, после разминки/растяжки (запись по времени) — тоже.
 sample({
 	clock: addSetFx.done,
 	source: { plan: workoutPlan, log: currentWorkoutLog },
-	filter: ({ log }) => log !== null && !log.completed_at,
+	filter: ({ log }, { params }) => log !== null && !log.completed_at && !params.durationSeconds,
 	fn: ({ plan }, { params }) =>
 		plan.find((item) => item.exercise === params.exerciseId)?.rest_seconds || DEFAULT_REST_SECONDS,
 	target: restStarted

@@ -58,6 +58,14 @@ export function plural(n: number, forms: [string, string, string]): string {
 	return forms[2];
 }
 
+// «45 с» / «5 мин» / «1 мин 30 с» — длительность разминки/растяжки
+export function formatDurationShort(seconds: number): string {
+	if (seconds < 60) return `${seconds} с`;
+	const minutes = Math.floor(seconds / 60);
+	const rest = seconds % 60;
+	return rest ? `${minutes} мин ${rest} с` : `${minutes} мин`;
+}
+
 // Целевые повторы: "8–10", "5"; если диапазон не задан числами,
 // оригинальная строка лежит в notes как "Повторы: 30-60 сек"
 export function formatTargetReps(item: {
