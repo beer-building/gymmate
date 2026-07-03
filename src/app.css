@@ -37,7 +37,11 @@
 		var(--color-background),
 		var(--color-text) 4%
 	); /* поля, дорожки, чипы */
-	--color-muted: color-mix(in oklab, var(--color-text) 55%, var(--color-background)); /* вторичный текст */
+	--color-muted: color-mix(
+		in oklab,
+		var(--color-text) 55%,
+		var(--color-background)
+	); /* вторичный текст */
 	--color-faint: color-mix(
 		in oklab,
 		var(--color-text) 35%,
@@ -54,6 +58,21 @@
 	--color-muscle-primary: oklch(0.63 0.19 27);
 	--color-muscle-secondary: oklch(0.72 0.16 62);
 
+	/* цвет на группу мышц — теги-пилюли читаются без текста (роль primary/secondary
+	   остаётся только за картой мышц). Светлота в узком коридоре 0.55–0.66 —
+	   держит читаемость на подложке 14% в обеих темах */
+	--color-muscle-chest: oklch(0.62 0.19 25); /* красный */
+	--color-muscle-back: oklch(0.55 0.16 262); /* синий */
+	--color-muscle-legs: oklch(0.6 0.14 235); /* голубой */
+	--color-muscle-glutes: oklch(0.62 0.19 350); /* розовый */
+	--color-muscle-calves: oklch(0.58 0.12 195); /* циан */
+	--color-muscle-shoulders: oklch(0.66 0.15 65); /* оранжевый */
+	--color-muscle-biceps: oklch(0.55 0.17 275); /* индиго */
+	--color-muscle-triceps: oklch(0.58 0.19 305); /* фиолетовый */
+	--color-muscle-forearms: oklch(0.58 0.11 130); /* оливковый */
+	--color-muscle-abs: oklch(0.6 0.14 165); /* изумруд */
+	--color-muscle-neck: oklch(0.58 0.08 250); /* серо-голубой */
+
 	/* пока держим UI монохромным: ссылки/фокус/выделение — нейтральный акцент, не синий */
 	--color-link: var(--color-accent);
 
@@ -66,7 +85,8 @@
 
 	/* радиус — щедрый и скруглённый; для полностью круглых элементов (пилюли,
 	   иконочные кнопки) используется буквальное значение 999px/50%, не токен */
-	--border-radius: 0.75rem; /* 12px */
+	--border-radius: 0.5rem; /* 8px — контролы, поля, вложенные блоки */
+	--border-radius-lg: 0.6875rem; /* 11px — карточки-плиты */
 
 	/* мягкие тени — основной источник глубины (плоских границ почти нет) */
 	--shadow-sm: 0 1px 2px oklch(0 0 0 / 0.05);
@@ -315,7 +335,7 @@ p {
 
 .plate {
 	background: var(--color-surface);
-	border-radius: var(--border-radius);
+	border-radius: var(--border-radius-lg);
 	box-shadow: var(--shadow-card);
 	position: relative;
 	isolation: isolate;
@@ -414,6 +434,12 @@ a.plate:hover,
 .tag.pill {
 	border-radius: 999px;
 	padding-inline: 0.625rem;
+}
+
+/* мелкая — в строках списков (редактор программы, планы) */
+.tag.sm {
+	font-size: 0.6875rem;
+	padding: 0.1875rem 0.5rem;
 }
 
 /* ---------- чипы-фильтры ---------- */

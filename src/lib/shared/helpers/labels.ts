@@ -14,6 +14,9 @@ export const muscleGroupLabels: Record<MuscleGroup, string> = {
 	neck: 'Шея'
 };
 
+// цвет группы мышц для тегов-пилюль; токены объявлены в app.css
+export const muscleColor = (group: MuscleGroup) => `var(--color-muscle-${group})`;
+
 export const exerciseKindLabels: Record<ExerciseKind, string> = {
 	strength: 'Силовые',
 	warmup: 'Разминка',

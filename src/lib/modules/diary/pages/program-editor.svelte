@@ -12,6 +12,7 @@
 	import { Button } from '$lib/shared/components/button';
 	import { Loader } from '$lib/shared/components/loader';
 	import type { Exercise, UserProgramWorkoutExercise } from '$lib/shared/types';
+	import { muscleGroupLabels, muscleColor } from '$lib/shared/helpers/labels';
 	import { SortableList, sortItems } from '@rodrigodagostino/svelte-sortable-list';
 	import '@rodrigodagostino/svelte-sortable-list/styles.css';
 
@@ -227,6 +228,12 @@
 										>
 											{item.expand?.exercise?.name ?? '—'}
 										</a>
+										{#if item.expand?.exercise?.primary_muscles?.[0]}
+											{@const muscle = item.expand.exercise.primary_muscles[0]}
+											<span class="tag pill sm" style="--tag-color: {muscleColor(muscle)}"
+												>{muscleGroupLabels[muscle]}</span
+											>
+										{/if}
 									</div>
 									<div class="exercise-fields">
 										{#if (item.expand?.exercise?.kind ?? 'strength') === 'strength'}
@@ -458,6 +465,10 @@
 		min-width: 0;
 		font-size: 14px;
 		overflow-wrap: anywhere;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 5px;
 	}
 
 	.exercise-link:hover {

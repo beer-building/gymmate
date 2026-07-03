@@ -6,7 +6,12 @@
 	import { Icon } from '$lib/shared/components/icon';
 	import { Loader } from '$lib/shared/components/loader';
 	import { RichText } from '$lib/shared/components/rich-text';
-	import { muscleGroupLabels, equipmentLabels, difficultyLabels } from '$lib/shared/helpers/labels';
+	import {
+		muscleGroupLabels,
+		muscleColor,
+		equipmentLabels,
+		difficultyLabels
+	} from '$lib/shared/helpers/labels';
 
 	const currentExercise = exercisesModel.currentExercise;
 	const exerciseError = exercisesModel.exerciseError;
@@ -44,8 +49,12 @@
 
 		<header class="rise">
 			<div class="head-text">
-				<p class="eyebrow">
-					// {item.primary_muscles.map((m) => muscleGroupLabels[m]).join(' · ')}
+				<p class="groups">
+					{#each item.primary_muscles as m (m)}
+						<span class="tag pill" style="--tag-color: {muscleColor(m)}"
+							>{muscleGroupLabels[m]}</span
+						>
+					{/each}
 				</p>
 				<h1>{item.name}</h1>
 				<div class="chips">
@@ -99,9 +108,13 @@
 				<div class="similar">
 					{#each $similar as ex (ex.id)}
 						<a href="/exercises/{ex.id}?ref={page.url.pathname}" class="sim-card plate">
-							<span class="sim-group mono"
-								>{ex.primary_muscles.map((m) => muscleGroupLabels[m]).join(' · ')}</span
-							>
+							<span class="sim-group">
+								{#each ex.primary_muscles as m (m)}
+									<span class="tag pill sm" style="--tag-color: {muscleColor(m)}"
+										>{muscleGroupLabels[m]}</span
+									>
+								{/each}
+							</span>
 							<span class="sim-name">{ex.name}</span>
 							<span class="sim-meta mono"
 								>{equipmentLabels[ex.equipment]} · {difficultyLabels[ex.difficulty]}</span
@@ -144,6 +157,13 @@
 	h1 {
 		font-size: clamp(28px, 4.5vw, 44px);
 		margin-block: 12px 18px;
+	}
+
+	.groups {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		margin: 0;
 	}
 
 	@media (max-width: 640px) {
@@ -249,10 +269,9 @@
 	}
 
 	.sim-group {
-		font-size: 11px;
-		color: var(--color-accent);
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
 	}
 
 	.sim-name {

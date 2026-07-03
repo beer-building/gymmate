@@ -7,6 +7,7 @@
 	import { Loader } from '$lib/shared/components/loader';
 	import {
 		muscleGroupLabels,
+		muscleColor,
 		equipmentLabels,
 		difficultyLabels,
 		exerciseKindLabels
@@ -170,9 +171,13 @@
 					class="plate card rise"
 					style="animation-delay: {Math.min(i * 0.03, 0.3)}s"
 				>
-					<span class="group mono"
-						>{exercise.primary_muscles.map((m) => muscleGroupLabels[m]).join(' · ')}</span
-					>
+					<span class="groups">
+						{#each exercise.primary_muscles as m (m)}
+							<span class="tag pill sm" style="--tag-color: {muscleColor(m)}"
+								>{muscleGroupLabels[m]}</span
+							>
+						{/each}
+					</span>
 					<h2>{exercise.name}</h2>
 					{#if exercise.instructions}
 						<p class="muted">{stripHtml(exercise.instructions)}</p>
@@ -320,11 +325,10 @@
 		overflow: hidden;
 	}
 
-	.group {
-		font-size: 11px;
-		text-transform: uppercase;
-		letter-spacing: 0.15em;
-		color: var(--color-accent);
+	.groups {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
 	}
 
 	.meta {
