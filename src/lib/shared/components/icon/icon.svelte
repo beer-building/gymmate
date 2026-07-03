@@ -7,15 +7,22 @@
 	}
 	const { size = 1.5, name }: Props = $props();
 
+	// глифы SF-набора обрезаны по своим границам (width/height у каждого свои),
+	// поэтому растягивание в квадрат --size раздувало узкие символы (chevron)
+	// и сжимало широкие (calendar). Единый кегль REF центрирует глиф в общем
+	// квадрате без растяжения — относительные размеры символов как в SF-шрифте.
+	const REF = 60; // чуть больше самого крупного глифа (dumbbell 59)
 	const normalize = (svg: string): string => {
 		const open = svg.match(/<svg([^>]*)>/);
 		if (!open) return svg;
 		const attrs = open[1];
 		if (/viewBox=/.test(attrs)) return svg;
-		const w = attrs.match(/width=['"]([0-9.]+)/)?.[1];
-		const h = attrs.match(/height=['"]([0-9.]+)/)?.[1];
+		const w = Number(attrs.match(/width=['"]([0-9.]+)/)?.[1]);
+		const h = Number(attrs.match(/height=['"]([0-9.]+)/)?.[1]);
 		if (!w || !h) return svg;
-		return svg.replace(/<svg([^>]*)>/, `<svg$1 viewBox="0 0 ${w} ${h}">`);
+		const x = (w - REF) / 2;
+		const y = (h - REF) / 2;
+		return svg.replace(/<svg([^>]*)>/, `<svg$1 viewBox="${x} ${y} ${REF} ${REF}">`);
 	};
 
 	const loadContent = async (n: string) => {
